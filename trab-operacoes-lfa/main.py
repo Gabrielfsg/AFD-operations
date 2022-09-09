@@ -29,7 +29,7 @@ if __name__ == '__main__':
     afd.criaTransicao(7, 8, 'b')
     afd.criaTransicao(8, 8, 'b')
 
-    afd.salvarArquivo("C:\\Users\\jr_jo\\Desktop","afdsalvo")
+    #afd.salvarArquivo("C:\\Users\\jr_jo\\Desktop","afdsalvo")
 
 
     print(afd)
@@ -41,3 +41,7 @@ if __name__ == '__main__':
         print('Aceita cadeia "{}"'.format(cadeia))
     else:
         print('Rejeita cadeia "{}"'.format(cadeia))
+
+    print("###COMPLEMENTO###")
+    print(afd.guritimo_complemento())
+    print("###")

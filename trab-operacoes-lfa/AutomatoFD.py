@@ -74,22 +74,31 @@ class AutomatoFD:
     def estadoFinal(self, id):
         return id in self.finais
 
+    def guritimo_complemento(self):
+        automato_comp = self
+        for i in automato_comp.estados:
+            if (i in automato_comp.finais):
+                automato_comp.mudaEstadoFinal(i,False)
+            else:
+                automato_comp.mudaEstadoFinal(i,True)
+        return automato_comp
+
     def __str__(self):
         s = 'AFD(Q, Σ, δ, q0, F): \n'
-        s += 'A = {'
+        s += 'Q = {'
         for a in self.alfabeto:
             s += "'{}', ".format(str(a))
         s += '} \n'
-        s += 'E = {'
+        s += 'Σ = {'
         for e in self.estados:
             s += '{}, '.format(str(e))
         s += '} \n'
-        s += 'T = {'
+        s += 'δ = {'
         for (e, a) in self.transicoes.keys():
             d = self.transicoes[(e, a)]
             s += "({},{})-->{}; ".format(e, a, d)
         s += ';} \n'
-        s += 'i = {} \n'.format(self.inicial)
+        s += 'q0 = {} \n'.format(self.inicial)
         s += 'F = {'
         for e in self.finais:
             s += '{}, '.format(str(e))
