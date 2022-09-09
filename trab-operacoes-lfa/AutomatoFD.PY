@@ -12,12 +12,11 @@ class AutomatoFD:
         self.__deuErro = False
         self.__estadoAtual = self.inicial
 
-
     def criaEstado(self, id, inicial=False, final=False):
         id = int(id)
         if id in self.estados:
             return False
-        self.estados= self.estados.union({id})
+        self.estados = self.estados.union({id})
         if inicial:
             self.inicial = id
         if final:
@@ -27,7 +26,7 @@ class AutomatoFD:
     def criaTransicao(self, origem, destino, simbolo):
         origem = int(origem)
         destino = int(destino)
-        simbolo = int(simbolo)
+        simbolo = str(simbolo)
         if not origem in self.estados:
             return False
         if not destino in self.estados:
@@ -63,7 +62,6 @@ class AutomatoFD:
                 break
             return self.__estadoAtual
 
-
     def deuErro(self):
         return self.__deuErro
 
@@ -74,32 +72,33 @@ class AutomatoFD:
         return id in self.finais
 
     def __str__(self):
-        s = 'AFD(E, A, T, i, F): \n'
-        s += '  E = { '
-        for e in self.estados:
-            s += '{}, '.format(str(e))
-        s += '} \n'
-        s += '  A = { '
+        s = 'AFD(A, E, T, i, F): \n'
+        s += 'A = {'
         for a in self.alfabeto:
-            s += ""'{}', "".format(a)
+            s += "'{}', ".format(str(a))
         s += '} \n'
-        s += '  T = { '
-        for (e,a) in self.transicoes.keys():
+        s += 'E = {'
+        for e in self.estados:
+            s += '{}'.format(str(e))
+        s += '} \n'
+        s += 'T = {'
+        for (e, a) in self.transicoes.keys():
             d = self.transicoes[(e, a)]
-            s += "({}, '{}')-->{}, ".format(e, a, d)
-        s += '} \n'
-        s += '   i = {} \n'.format(self.inicial)
-        s += '   F= { '
+            s += ";({},{})-->{}".format(e, a, d)
+        s += ';} \n'
+        s += 'i = {} \n'.format(self.inicial)
+        s += 'F = {'
         for e in self.finais:
             s += '{}, '.format(str(e))
-        s += '} \n'
+        s += '}'
         return s
+
 
 if __name__ == '__main__':
 
     afd = AutomatoFD('ab')
 
-    for i in range(1,5):
+    for i in range(1, 5):
         afd.criaEstado(i)
     afd.mudaEstadoInicial(1)
     afd.mudaEstadoFinal(4, True)
@@ -119,8 +118,6 @@ if __name__ == '__main__':
     afd.limpaAfd()
     parada = afd.move(cadeia)
     if not afd.deuErro() and afd.estadoFinal(parada):
-        print('Aceita cadeia "{}"' .format(cadeia))
+        print('Aceita cadeia "{}"'.format(cadeia))
     else:
         print('Rejeita cadeia "{}"'.format(cadeia))
-
-
