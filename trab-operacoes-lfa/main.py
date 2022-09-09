@@ -36,3 +36,8 @@ if __name__ == '__main__':
         print('Aceita cadeia "{}"'.format(cadeia))
     else:
         print('Rejeita cadeia "{}"'.format(cadeia))
+
+    print("###COMPLEMENTO###")
+    complemento = afd.guritimo_complemento()
+    print(complemento)
+    print("###")

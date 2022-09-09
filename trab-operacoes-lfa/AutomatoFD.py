@@ -71,6 +71,15 @@ class AutomatoFD:
     def estadoFinal(self, id):
         return id in self.finais
 
+    def guritimo_complemento(self):
+        automato_comp = AutomatoFD(self.alfabeto)
+        for i in self.estados:
+            if (i not in self.finais):
+                automato_comp.mudaEstadoFinal(i, True)
+            if (i in self.finais):
+                automato_comp.mudaEstadoFinal(i, False)
+        return automato_comp
+
     def __str__(self):
         s = 'AFD(A, E, T, i, F): \n'
         s += 'A = {'
