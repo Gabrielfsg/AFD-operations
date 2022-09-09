@@ -7,6 +7,9 @@ class AutomatoFD:
         self.transicoes = dict()
         self.inicial = None
         self.finais = set()
+        self.funcao = None
+        self.qtdEstados = 0
+        self.qtdTransicoes = 0
 
     def limpaAfd(self):
         self.__deuErro = False
@@ -72,19 +75,19 @@ class AutomatoFD:
         return id in self.finais
 
     def __str__(self):
-        s = 'AFD(A, E, T, i, F): \n'
+        s = 'AFD(Q, Σ, δ, q0, F): \n'
         s += 'A = {'
         for a in self.alfabeto:
             s += "'{}', ".format(str(a))
         s += '} \n'
         s += 'E = {'
         for e in self.estados:
-            s += '{}'.format(str(e))
+            s += '{}, '.format(str(e))
         s += '} \n'
         s += 'T = {'
         for (e, a) in self.transicoes.keys():
             d = self.transicoes[(e, a)]
-            s += ";({},{})-->{}".format(e, a, d)
+            s += "({},{})-->{}; ".format(e, a, d)
         s += ';} \n'
         s += 'i = {} \n'.format(self.inicial)
         s += 'F = {'
@@ -92,3 +95,48 @@ class AutomatoFD:
             s += '{}, '.format(str(e))
         s += '}'
         return s
+
+    def salvarArquivo(self, diretorio, nome):
+
+        path = diretorio + '\\' + nome + '.jff'
+        # salvando no modelo do JFLAP
+
+        try:
+
+            arqObj = open(path, "w")
+            arqObj.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><structure>")
+            arqObj.write("\n<type>fa</type>")  # automato finito
+            arqObj.write("\n\t\t<automaton>")
+
+            # Montagem AFD
+            i = 1
+            # Salvando os estados
+            while True:
+
+                if i == self.qtdEstados:
+                    break
+                else:
+                    arqObj.write("\n<state id=\"{}\" name =\"q{}\" >\n".format(i, i))
+                    if i == self.inicial:  # verifica se o estado a ser salvo é inicial e salva
+                        arqObj.write("<initial/>\n</state>")
+                    elif i in self.finais:  # verifica se o estado a ser salvo é final e salva
+                        arqObj.write("<final/>\n</state>")
+                    else:
+                        arqObj.write("</state>")
+                i = i + 1
+
+            # Salvando as transicoes
+            i = 1
+
+            for (i, j) in self.transicoes.keys():
+                d = self.transicoes[(i, j)]
+                arqObj.write(
+                    "\n<transition>\n\t<from>{}</from>\n\t<to>{}</to>\n\t<read>{}</read>\n\t</transition>".format(i, d, j))
+
+            arqObj.write("\n\t</automaton>")
+            arqObj.write("\n</structure>")
+
+            arqObj.close()
+            print("\nAFD salvo com sucesso !")
+        except Exception as Erro:
+            print("\nErro ao salvar o arquivo ! {}".format(Erro))

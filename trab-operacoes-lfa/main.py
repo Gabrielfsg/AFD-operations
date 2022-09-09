@@ -6,6 +6,9 @@ if __name__ == '__main__':
 
     for i in range(1, 9):
         afd.criaEstado(i)
+        afd.qtdEstados = i
+
+
     afd.mudaEstadoInicial(1)
     afd.mudaEstadoFinal(4, True)
 
@@ -25,6 +28,8 @@ if __name__ == '__main__':
     afd.criaTransicao(6, 6, 'b')
     afd.criaTransicao(7, 8, 'b')
     afd.criaTransicao(8, 8, 'b')
+
+    afd.salvarArquivo("C:\\Users\\jr_jo\\Desktop","afdsalvo")
 
 
     print(afd)
