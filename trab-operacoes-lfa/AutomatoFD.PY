@@ -98,6 +98,7 @@ class AutomatoFD:
 if __name__ == '__main__':
 
     afd = AutomatoFD('ab')
+
     for i in range(1,5):
         afd.criaEstado(i)
     afd.mudaEstadoInicial(1)
