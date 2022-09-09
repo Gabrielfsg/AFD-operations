@@ -37,7 +37,7 @@ class AutomatoFD:
         self.transicoes[(origem, simbolo)] = destino
         return True
 
-    def mudaEstadoInicial(self, id, final):
+    def mudaEstadoInicial(self, id):
         if not id in self.estados:
             return
         self.inicial = id
