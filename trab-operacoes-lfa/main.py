@@ -1,4 +1,4 @@
-from AutomatoFD import AutomatoFD
+from AutomatoFD import *
 
 if __name__ == '__main__':
 
@@ -29,6 +29,8 @@ if __name__ == '__main__':
     afd.criaTransicao(6, 6, 'b')
     afd.criaTransicao(7, 8, 'b')
     afd.criaTransicao(8, 8, 'b')
+    afd.funcao = "nao contem bab e contem par de a"
+
 
     afd.salvarArquivo("AFDTeste")
 
@@ -46,5 +48,7 @@ if __name__ == '__main__':
     print(afd.guritimo_complemento())
     print("###")
 
-
+    AFD_importado = importarAFD("AFDTeste.jff")
+    print("###Importando Automato...###")
+    print(AFD_importado)
 
