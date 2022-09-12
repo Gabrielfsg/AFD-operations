@@ -75,9 +75,17 @@ class AutomatoFD:
         return id in self.finais
 
     def guritimo_complemento(self):
-        automato_comp = self
+        automato_comp = AutomatoFD(self.alfabeto)
+        automato_comp.estados = self.estados
+        automato_comp.transicoes = self.transicoes
+        automato_comp.inicial = self.inicial
+        automato_comp.finais = self.finais
+        automato_comp.funcao = self.funcao
+        automato_comp.qtdEstados = self.qtdEstados
+        automato_comp.qtdTransicoes = self.qtdTransicoes
+
         for i in automato_comp.estados:
-            if (i in automato_comp.finais):
+            if i in automato_comp.finais:
                 automato_comp.mudaEstadoFinal(i,False)
             else:
                 automato_comp.mudaEstadoFinal(i,True)
@@ -105,14 +113,13 @@ class AutomatoFD:
         s += '}'
         return s
 
-    def salvarArquivo(self, diretorio, nome):
+    def salvarArquivo(self,nome):
 
-        path = diretorio + '\\' + nome + '.jff'
         # salvando no modelo do JFLAP
 
         try:
 
-            arqObj = open(path, "w")
+            arqObj = open(nome + ".jff", "w")
             arqObj.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><structure>")
             arqObj.write("\n<type>fa</type>")  # automato finito
             arqObj.write("\n\t\t<automaton>")
@@ -122,12 +129,15 @@ class AutomatoFD:
             # Salvando os estados
             while True:
 
-                if i == self.qtdEstados:
+                if i == self.qtdEstados + 1:
                     break
                 else:
                     arqObj.write("\n<state id=\"{}\" name =\"q{}\" >\n".format(i, i))
                     if i == self.inicial:  # verifica se o estado a ser salvo é inicial e salva
-                        arqObj.write("<initial/>\n</state>")
+                        if i in self.finais: #se o estado inicial também for final
+                            arqObj.write("<initial/>\n<final/>\n</state>")
+                        else:
+                            arqObj.write("<initial/>\n</state>")
                     elif i in self.finais:  # verifica se o estado a ser salvo é final e salva
                         arqObj.write("<final/>\n</state>")
                     else:
@@ -144,8 +154,8 @@ class AutomatoFD:
 
             arqObj.write("\n\t</automaton>")
             arqObj.write("\n</structure>")
-
             arqObj.close()
+
             print("\nAFD salvo com sucesso !")
         except Exception as Erro:
             print("\nErro ao salvar o arquivo ! {}".format(Erro))

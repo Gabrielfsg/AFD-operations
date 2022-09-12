@@ -8,9 +8,10 @@ if __name__ == '__main__':
         afd.criaEstado(i)
         afd.qtdEstados = i
 
-
     afd.mudaEstadoInicial(1)
-    afd.mudaEstadoFinal(4, True)
+    afd.mudaEstadoFinal(1, True)
+    afd.mudaEstadoFinal(2, True)
+    afd.mudaEstadoFinal(3, True)
 
     afd.criaTransicao(1, 5, 'a')
     afd.criaTransicao(2, 7, 'a')
@@ -29,8 +30,7 @@ if __name__ == '__main__':
     afd.criaTransicao(7, 8, 'b')
     afd.criaTransicao(8, 8, 'b')
 
-    #afd.salvarArquivo("C:\\Users\\jr_jo\\Desktop","afdsalvo")
-
+    afd.salvarArquivo("AFDTeste")
 
     print(afd)
 
@@ -45,3 +45,6 @@ if __name__ == '__main__':
     print("###COMPLEMENTO###")
     print(afd.guritimo_complemento())
     print("###")
+
+
+
