@@ -3,6 +3,7 @@ from AutomatoFD import *
 if __name__ == '__main__':
 
     afd = AutomatoFD('ab')
+    afd = AutomatoFD('ab')
 
     for i in range(1, 9):
         afd.criaEstado(i)
@@ -36,19 +37,61 @@ if __name__ == '__main__':
 
     print(afd)
 
-    cadeia = 'abbabaabbbbbba'
-    afd.limpaAfd()
-    parada = afd.move(cadeia)
-    if not afd.deuErro() and afd.estadoFinal(parada):
-        print('Aceita cadeia "{}"'.format(cadeia))
-    else:
-        print('Rejeita cadeia "{}"'.format(cadeia))
+    # cadeia = 'abbabaabbbbbba'
+    # afd.limpaAfd()
+    # parada = afd.move(cadeia)
+    # if not afd.deuErro() and afd.estadoFinal(parada):
+    #     print('Aceita cadeia "{}"'.format(cadeia))
+    # else:
+    #     print('Rejeita cadeia "{}"'.format(cadeia))
+    #
+    # print("###COMPLEMENTO###")
+    # print(afd.guritimo_complemento())
+    # print("###")
+    #
+    # AFD_importado = importarAFD("AFDTeste.jff")
+    # print("###Importando Automato...###")
+    # print(AFD_importado)
 
-    print("###COMPLEMENTO###")
-    print(afd.guritimo_complemento())
-    print("###")
+    print("\n ###MULTIPLICAÇAO###")
 
-    AFD_importado = importarAFD("AFDTeste.jff")
-    print("###Importando Automato...###")
-    print(AFD_importado)
+    afdM1 = AutomatoFD('ab');
+    afdM2 = AutomatoFD('ab');
+
+    for i in range(1, 5):
+        afdM1.criaEstado(i)
+
+    for i in range(1, 3):
+        afdM2.criaEstado(i)
+
+    afdM1.criaTransicao(1, 2, 'b')
+    afdM1.criaTransicao(1, 1, 'a')
+    afdM1.criaTransicao(2, 2, 'b')
+    afdM1.criaTransicao(2, 3, 'a')
+    afdM1.criaTransicao(3, 4, 'b')
+    afdM1.criaTransicao(3, 1, 'a')
+    afdM1.criaTransicao(4, 4, 'a')
+    afdM1.criaTransicao(4, 4, 'b')
+
+    afdM2.criaTransicao(1, 1, 'b')
+    afdM2.criaTransicao(1, 2, 'a')
+    afdM2.criaTransicao(2, 2, 'b')
+    afdM2.criaTransicao(2, 1, 'a')
+
+    afdM1.mudaEstadoInicial(1)
+    afdM2.mudaEstadoInicial(1)
+
+    afdM2.mudaEstadoFinal(1, True)
+    afdM1.mudaEstadoFinal(1, True)
+    afdM1.mudaEstadoFinal(2, True)
+    afdM1.mudaEstadoFinal(3, True)
+
+    print(afdM1)
+    print(afdM2)
+
+    afdM1.multiplicacao_automato(afdM2)
+
+
+
+
 
