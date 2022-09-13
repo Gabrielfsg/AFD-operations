@@ -105,8 +105,8 @@ class AutomatoFD:
 
         for i in range(1, numA1 + 1):
             for p in range(1, numA2 + 1):
-                estados[(i,p)] = count
-                count+=1
+                estados[(i, p)] = count
+                count += 1
 
         # print("ESTADOS: ", estados)
         # print(self.transicoes)
@@ -115,18 +115,59 @@ class AutomatoFD:
         for i in range(1, numA1 + 1):
             for p in range(1, numA2 + 1):
                 for l in list(self.alfabeto):
-                    automato_mult.criaTransicao(estados[(i,p)], estados[(self.transicoes[(i,l)], afdN2.transicoes[(p,l)])], l)
+                    automato_mult.criaTransicao(estados[(i, p)],
+                                                estados[(self.transicoes[(i, l)], afdN2.transicoes[(p, l)])], l)
 
         automato_mult.inicial = estados[(self.inicial, afdN2.inicial)]
 
         for i in self.finais:
             for p in afdN2.finais:
-                if((i,p) in estados.keys()):
-                    automato_mult.mudaEstadoFinal(estados[(i,p)], True)
+                if ((i, p) in estados.keys()):
+                    automato_mult.mudaEstadoFinal(estados[(i, p)], True)
 
         print(automato_mult)
 
         return automato_mult
+
+    def uniao_automato(self, afdN2):
+        estados = dict()
+        automato_uni = AutomatoFD(self.alfabeto)
+        numA1 = len(self.estados)
+        numA2 = len(afdN2.estados)
+        count = 1
+
+        estadosTotaisMult = (numA1 * numA2) + 1
+
+        for i in range(1, estadosTotaisMult):
+            automato_uni.criaEstado(i)
+
+        for i in range(1, numA1 + 1):
+            for p in range(1, numA2 + 1):
+                estados[(i, p)] = count
+                count += 1
+
+        print("ESTADOS: ", estados)
+        # print(self.transicoes)
+        # print(afdN2.transicoes)
+
+        for i in range(1, numA1 + 1):
+            for p in range(1, numA2 + 1):
+                for l in list(self.alfabeto):
+                    automato_uni.criaTransicao(estados[(i, p)],
+                                               estados[(self.transicoes[(i, l)], afdN2.transicoes[(p, l)])], l)
+
+        automato_uni.inicial = estados[(self.inicial, afdN2.inicial)]
+
+        for e in estados:
+            for i in self.finais:
+                if(e[0] == i):
+                    automato_uni.mudaEstadoFinal(estados[e],True)
+
+            for p in afdN2.finais:
+                if(e[1] == p):
+                    automato_uni.mudaEstadoFinal(estados[e],True)
+
+        print(automato_uni)
 
     def guritimo_complemento(self):
 

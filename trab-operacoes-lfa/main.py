@@ -53,7 +53,7 @@ if __name__ == '__main__':
     # print("###Importando Automato...###")
     # print(AFD_importado)
 
-    print("\n ###MULTIPLICAÇAO###")
+    print("\n ###MULTIPLICAÇAO E UNIÃO###")
 
     afdM1 = AutomatoFD('ab');
     afdM2 = AutomatoFD('ab');
@@ -89,7 +89,8 @@ if __name__ == '__main__':
     print(afdM1)
     print(afdM2)
 
-    afdM1.multiplicacao_automato(afdM2)
+    # afdM1.multiplicacao_automato(afdM2)
+    afdM1.uniao_automato(afdM2)
 
 
 
