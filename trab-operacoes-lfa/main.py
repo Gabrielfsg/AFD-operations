@@ -45,9 +45,6 @@ if __name__ == '__main__':
     # else:
     #     print('Rejeita cadeia "{}"'.format(cadeia))
     #
-    # print("###COMPLEMENTO###")
-    # print(afd.guritimo_complemento())
-    # print("###")
     #
     # AFD_importado = importarAFD("AFDTeste.jff")
     # print("###Importando Automato...###")
@@ -89,8 +86,12 @@ if __name__ == '__main__':
     print(afdM1)
     print(afdM2)
 
-    # afdM1.multiplicacao_automato(afdM2)
-    afdM1.uniao_automato(afdM2)
+    aft = afdM1.multiplicacao_automato(afdM2)
+    print(aft)
+    print(afdM1.intersecao_automato(afdM2))
+    print(afdM1.uniao_automato(afdM2))
+    print(afdM1.diferenca_automato(afdM2))
+
 
 
 
