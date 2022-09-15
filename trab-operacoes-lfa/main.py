@@ -5,6 +5,7 @@ if __name__ == '__main__':
     afd = AutomatoFD('ab')
     afd = AutomatoFD('ab')
 
+    #AFD Lista 1 Exercício 7 - nao contem bab e contem par de a
     for i in range(1, 9):
         afd.criaEstado(i)
         afd.qtdEstados = i
@@ -32,11 +33,29 @@ if __name__ == '__main__':
     afd.criaTransicao(8, 8, 'b')
     afd.funcao = "nao contem bab e contem par de a"
 
+    #print(afd.transicoes)
 
-    afd.salvarArquivo("AFDTeste")
+    #afd.salvarArquivo("AFDTeste")
 
-    print(afd)
+    #print(afd)
 
+    cadeia = 'abbabaabbbbbba'
+    afd.limpaAfd()
+    parada = afd.move(cadeia)
+    if not afd.deuErro() and afd.estadoFinal(parada):
+        print('Aceita cadeia "{}"'.format(cadeia))
+    else:
+        print('Rejeita cadeia "{}"'.format(cadeia))
+
+    #print("###COMPLEMENTO###")
+    #print(afd.guritimo_complemento())
+    #print("###")
+
+    #AFD_importado = importarAFD("AFDTeste.jff")
+    #print("###Importando Automato...###")
+    #print(AFD_importado)
+    afd.estadosEquivalentes()
+=======
     # cadeia = 'abbabaabbbbbba'
     # afd.limpaAfd()
     # parada = afd.move(cadeia)
@@ -92,8 +111,11 @@ if __name__ == '__main__':
     print(afdM1.uniao_automato(afdM2))
     print(afdM1.diferenca_automato(afdM2))
 
+    #afd2 = importarAFD("AFDTeste2.jff")
+    #print(afd2)
+    #afd2.estadosEquivalentes()
 
 
 
 
-
+  
