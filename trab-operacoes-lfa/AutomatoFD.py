@@ -1,4 +1,6 @@
 import xml.etree.ElementTree as ET
+import numpy as np
+
 
 class AutomatoFD:
 
@@ -100,6 +102,80 @@ class AutomatoFD:
                 automato_comp.mudaEstadoFinal(i,True)
         return automato_comp
 
+    def estadosEquivalentes(self):
+
+        tblEq = self.obterTrivialmenteNaoEquivalentes()
+
+        for i in range(2,len(self.estados)):
+            for j in range(1,len(self.estados) - 1):
+                if i == j:
+                    break
+                else:
+                    for char in self.alfabeto:
+                        qi = self.transicoes[(i,char)]
+                        qj = self.transicoes[(j,char)]
+                        print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
+
+                        if qi != qj:
+                            if tblEq[(qi,qj)] == False: #Sao trivialmente não equivalentes
+                                print("marca false")
+                                tblEq[(i,j)] = False
+                                tblEq[(j,i)] = False
+                                break
+                            else: #Não sei
+                                print("não sei, append")
+                                tblEq[(qi,qj)].append((i,j))
+                                tblEq[(qj,qi)].append((i,j))
+
+        self.printTbl(tblEq,True)
+
+    def printTbl(self,tblEq,printaSomenteEquivalentes):
+
+        print("Tabela de Equivalencia")
+        if printaSomenteEquivalentes:
+            for i in range(2,len(self.estados)):
+                print(f"{i}| ", end="")
+                for j in range(1,len(self.estados) - 1):
+                    if i == j:
+                        break
+                    else:
+                        print(f"{tblEq[(i,j)]}, ", end="")
+                print("\n")
+
+    def obterTrivialmenteNaoEquivalentes(self):
+
+        col = list(self.estados)
+        lin = list(self.estados)
+
+        col.remove(col[0])
+        lin.remove(col[-1])
+
+        tblEquiv = dict()
+
+        for i in col:
+            for j in lin:
+                if i == j:
+                    break
+                else:
+                    if self.trivialmenteNaoEquiv(i,j):
+                        tblEquiv[(i,j)] = False
+                        tblEquiv[(j,i)] = False
+                    else:
+                        tblEquiv[(i,j)] = []
+                        tblEquiv[(j,i)] = []
+
+        return tblEquiv
+
+    def trivialmenteNaoEquiv(self, qj, qi):
+        if qi in self.finais and qj in self.finais: #se forem finais
+            return False
+        if qi in self.finais and qj not in self.finais: #se i for final e j nao(nao equiv)
+            return True
+        if qi not in self.finais and qj in self.finais: #se j for final e i nao(nao equiv)
+            return True
+        if qi not in self.finais and qj not in self.finais: #se nenhum for final
+            return False
+
     def __str__(self):
         s = 'AFD(Q, Σ, δ, q0, F): \n'
         s += 'Q = {'
@@ -123,9 +199,7 @@ class AutomatoFD:
         return s
 
     def salvarArquivo(self,nome):
-
         # salvando no modelo do JFLAP
-
         try:
 
             arqObj = open(nome + ".jff", "w")
@@ -156,6 +230,10 @@ class AutomatoFD:
             # Salvando as transicoes
             i = 1
 
+            #i = Estado atual
+            #d = Proximo Estado
+            #j = String lida
+
             for (i, j) in self.transicoes.keys():
                 d = self.transicoes[(i, j)]
                 arqObj.write(
@@ -168,6 +246,8 @@ class AutomatoFD:
             print("\nAFD salvo com sucesso !")
         except Exception as Erro:
             print("\nErro ao salvar o arquivo ! {}".format(Erro))
+
+
 
 
 def importarAFD(diretorio):
@@ -193,6 +273,7 @@ def importarAFD(diretorio):
         # Cria o alfabeto
         AFD = AutomatoFD(alfabeto)
 
+        Estado = 1
         #contando os estados
         for filho in raiz:
             for f in filho:
@@ -201,13 +282,11 @@ def importarAFD(diretorio):
                     Estado = Estado + 1
 
         Estado = 1
-
         #obtendo estados iniciais, finais e transicoes
         for filho in raiz:
             for f in filho:
                 # conjunto de estados
                 if f.tag == 'state':
-
                     for s in f:
                         if s.tag == 'initial':
                             AFD.mudaEstadoInicial(Estado)
@@ -215,6 +294,7 @@ def importarAFD(diretorio):
                             AFD.mudaEstadoFinal(Estado,True)
 
                     Estado = Estado + 1
+
                 elif f.tag == 'transition':
                     origem = -1
                     simbolo = ''
@@ -223,17 +303,17 @@ def importarAFD(diretorio):
                     #Transiçoes
                     for t in f:
                         if t.tag == 'from':
-                            origem = int(t.text)
+                            origem = int(t.text) + 1
                         elif t.tag == 'read':
                             if t.text is not None:
                                 simbolo = t.text
                         elif t.tag == 'to':
-                            destino = int(t.text)
+                            destino = int(t.text) + 1
 
                     AFD.criaTransicao(origem, destino,simbolo)
 
         arq.close()
-        AFD.funcao = input("\nDefina a função do Automato: ")
+        #AFD.funcao = input("\nDefina a função do Automato: ")
         print("\nAFD importado com sucesso !")
         return AFD
 
