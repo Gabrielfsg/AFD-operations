@@ -3,7 +3,6 @@ from AutomatoFD import *
 if __name__ == '__main__':
 
     afd = AutomatoFD('ab')
-    afd = AutomatoFD('ab')
 
     #AFD Lista 1 Exercício 7 - nao contem bab e contem par de a
     for i in range(1, 9):
@@ -55,7 +54,8 @@ if __name__ == '__main__':
     #print("###Importando Automato...###")
     #print(AFD_importado)
     afd.estadosEquivalentes()
-=======
+
+
     # cadeia = 'abbabaabbbbbba'
     # afd.limpaAfd()
     # parada = afd.move(cadeia)
@@ -69,47 +69,47 @@ if __name__ == '__main__':
     # print("###Importando Automato...###")
     # print(AFD_importado)
 
-    print("\n ###MULTIPLICAÇAO E UNIÃO###")
-
-    afdM1 = AutomatoFD('ab');
-    afdM2 = AutomatoFD('ab');
-
-    for i in range(1, 5):
-        afdM1.criaEstado(i)
-
-    for i in range(1, 3):
-        afdM2.criaEstado(i)
-
-    afdM1.criaTransicao(1, 2, 'b')
-    afdM1.criaTransicao(1, 1, 'a')
-    afdM1.criaTransicao(2, 2, 'b')
-    afdM1.criaTransicao(2, 3, 'a')
-    afdM1.criaTransicao(3, 4, 'b')
-    afdM1.criaTransicao(3, 1, 'a')
-    afdM1.criaTransicao(4, 4, 'a')
-    afdM1.criaTransicao(4, 4, 'b')
-
-    afdM2.criaTransicao(1, 1, 'b')
-    afdM2.criaTransicao(1, 2, 'a')
-    afdM2.criaTransicao(2, 2, 'b')
-    afdM2.criaTransicao(2, 1, 'a')
-
-    afdM1.mudaEstadoInicial(1)
-    afdM2.mudaEstadoInicial(1)
-
-    afdM2.mudaEstadoFinal(1, True)
-    afdM1.mudaEstadoFinal(1, True)
-    afdM1.mudaEstadoFinal(2, True)
-    afdM1.mudaEstadoFinal(3, True)
-
-    print(afdM1)
-    print(afdM2)
-
-    aft = afdM1.multiplicacao_automato(afdM2)
-    print(aft)
-    print(afdM1.intersecao_automato(afdM2))
-    print(afdM1.uniao_automato(afdM2))
-    print(afdM1.diferenca_automato(afdM2))
+    # print("\n ###MULTIPLICAÇAO E UNIÃO###")
+    #
+    # afdM1 = AutomatoFD('ab');
+    # afdM2 = AutomatoFD('ab');
+    #
+    # for i in range(1, 5):
+    #     afdM1.criaEstado(i)
+    #
+    # for i in range(1, 3):
+    #     afdM2.criaEstado(i)
+    #
+    # afdM1.criaTransicao(1, 2, 'b')
+    # afdM1.criaTransicao(1, 1, 'a')
+    # afdM1.criaTransicao(2, 2, 'b')
+    # afdM1.criaTransicao(2, 3, 'a')
+    # afdM1.criaTransicao(3, 4, 'b')
+    # afdM1.criaTransicao(3, 1, 'a')
+    # afdM1.criaTransicao(4, 4, 'a')
+    # afdM1.criaTransicao(4, 4, 'b')
+    #
+    # afdM2.criaTransicao(1, 1, 'b')
+    # afdM2.criaTransicao(1, 2, 'a')
+    # afdM2.criaTransicao(2, 2, 'b')
+    # afdM2.criaTransicao(2, 1, 'a')
+    #
+    # afdM1.mudaEstadoInicial(1)
+    # afdM2.mudaEstadoInicial(1)
+    #
+    # afdM2.mudaEstadoFinal(1, True)
+    # afdM1.mudaEstadoFinal(1, True)
+    # afdM1.mudaEstadoFinal(2, True)
+    # afdM1.mudaEstadoFinal(3, True)
+    #
+    # print(afdM1)
+    # print(afdM2)
+    #
+    # aft = afdM1.multiplicacao_automato(afdM2)
+    # print(aft)
+    # print(afdM1.intersecao_automato(afdM2))
+    # print(afdM1.uniao_automato(afdM2))
+    # print(afdM1.diferenca_automato(afdM2))
 
     #afd2 = importarAFD("AFDTeste2.jff")
     #print(afd2)

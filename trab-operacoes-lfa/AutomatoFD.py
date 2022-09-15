@@ -259,26 +259,26 @@ class AutomatoFD:
 
         tblEq = self.obterTrivialmenteNaoEquivalentes()
 
-        for i in range(2,len(self.estados)):
-            for j in range(1,len(self.estados) - 1):
+        for i in range(2,len(self.estados) + 1):
+            for j in range(1,len(self.estados)):
                 if i == j:
                     break
                 else:
-                    for char in self.alfabeto:
-                        qi = self.transicoes[(i,char)]
-                        qj = self.transicoes[(j,char)]
-                        print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
-
-                        if qi != qj:
-                            if tblEq[(qi,qj)] == False: #Sao trivialmente não equivalentes
-                                print("marca false")
-                                tblEq[(i,j)] = False
-                                tblEq[(j,i)] = False
-                                break
-                            else: #Não sei
-                                print("não sei, append")
-                                tblEq[(qi,qj)].append((i,j))
-                                tblEq[(qj,qi)].append((i,j))
+                    if tblEq[(i,j)] != False:
+                        for char in self.alfabeto:
+                            qi = self.transicoes[(i,char)]
+                            qj = self.transicoes[(j,char)]
+                            print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
+                            if qi != qj: #nao analisa tuplas iguais
+                                if tblEq[(qi,qj)] == False: #Sao trivialmente não equivalentes
+                                    print("marca false")
+                                    tblEq[(i,j)] = False
+                                    tblEq[(j,i)] = False
+                                    break
+                                else: #Não sei
+                                    print("não sei, append")
+                                    tblEq[(qi,qj)].append((i,j))
+                                    tblEq[(qj,qi)].append((i,j))
 
         self.printTbl(tblEq,True)
 
@@ -286,9 +286,9 @@ class AutomatoFD:
 
         print("Tabela de Equivalencia")
         if printaSomenteEquivalentes:
-            for i in range(2,len(self.estados)):
+            for i in range(2,len(self.estados) + 1):
                 print(f"{i}| ", end="")
-                for j in range(1,len(self.estados) - 1):
+                for j in range(1,len(self.estados)):
                     if i == j:
                         break
                     else:
@@ -297,16 +297,10 @@ class AutomatoFD:
 
     def obterTrivialmenteNaoEquivalentes(self):
 
-        col = list(self.estados)
-        lin = list(self.estados)
-
-        col.remove(col[0])
-        lin.remove(col[-1])
-
         tblEquiv = dict()
 
-        for i in col:
-            for j in lin:
+        for i in range(2,len(self.estados) + 1):
+            for j in range(1,len(self.estados)):
                 if i == j:
                     break
                 else:
