@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import numpy as np
 
 
+
 class AutomatoFD:
 
     def __init__(self, Alfabeto):
@@ -91,15 +92,167 @@ class AutomatoFD:
 
         return AFD_Copia
 
-    def guritimo_complemento(self):
+    def multiplicacao_automato(self, afdN2):
+        estados = dict()
+        automato_mult = AutomatoFD(self.alfabeto)
+        numA1 = len(self.estados)
+        numA2 = len(afdN2.estados)
+        count = 1
+
+        estadosTotaisMult = (numA1 * numA2) + 1
+
+        for i in range(1, estadosTotaisMult):
+            automato_mult.criaEstado(i)
+
+        for i in range(1, numA1 + 1):
+            for p in range(1, numA2 + 1):
+                estados[(i, p)] = count
+                count += 1
+
+        # print("ESTADOS: ", estados)
+        # print(self.transicoes)
+        # print(afdN2.transicoes)
+
+        for i in range(1, numA1 + 1):
+            for p in range(1, numA2 + 1):
+                for l in list(self.alfabeto):
+                    automato_mult.criaTransicao(estados[(i, p)],
+                                                estados[(self.transicoes[(i, l)], afdN2.transicoes[(p, l)])], l)
+
+        automato_mult.inicial = estados[(self.inicial, afdN2.inicial)]
+        return automato_mult
+    def intersecao_automato(self, afdN2):
+        estados = dict()
+        automato_mult = AutomatoFD(self.alfabeto)
+        numA1 = len(self.estados)
+        numA2 = len(afdN2.estados)
+        count = 1
+
+        estadosTotaisMult = (numA1 * numA2) + 1
+
+        for i in range(1, estadosTotaisMult):
+            automato_mult.criaEstado(i)
+
+        for i in range(1, numA1 + 1):
+            for p in range(1, numA2 + 1):
+                estados[(i, p)] = count
+                count += 1
+
+        # print("ESTADOS: ", estados)
+        # print(self.transicoes)
+        # print(afdN2.transicoes)
+
+        for i in range(1, numA1 + 1):
+            for p in range(1, numA2 + 1):
+                for l in list(self.alfabeto):
+                    automato_mult.criaTransicao(estados[(i, p)],
+                                                estados[(self.transicoes[(i, l)], afdN2.transicoes[(p, l)])], l)
+
+        automato_mult.inicial = estados[(self.inicial, afdN2.inicial)]
+
+        for i in self.finais:
+            for p in afdN2.finais:
+                if ((i, p) in estados.keys()):
+                    automato_mult.mudaEstadoFinal(estados[(i, p)], True)
+
+        # print(automato_mult)
+
+        return automato_mult
+
+    def uniao_automato(self, afdN2):
+        estados = dict()
+        automato_uni = AutomatoFD(self.alfabeto)
+        numA1 = len(self.estados)
+        numA2 = len(afdN2.estados)
+        count = 1
+
+        estadosTotaisMult = (numA1 * numA2) + 1
+
+        for i in range(1, estadosTotaisMult):
+            automato_uni.criaEstado(i)
+
+        for i in range(1, numA1 + 1):
+            for p in range(1, numA2 + 1):
+                estados[(i, p)] = count
+                count += 1
+
+        # print("ESTADOS: ", estados)
+        # print(self.transicoes)
+        # print(afdN2.transicoes)
+
+        for i in range(1, numA1 + 1):
+            for p in range(1, numA2 + 1):
+                for l in list(self.alfabeto):
+                    automato_uni.criaTransicao(estados[(i, p)],
+                                               estados[(self.transicoes[(i, l)], afdN2.transicoes[(p, l)])], l)
+
+        automato_uni.inicial = estados[(self.inicial, afdN2.inicial)]
+
+        for e in estados:
+            for i in self.finais:
+                if (e[0] == i):
+                    automato_uni.mudaEstadoFinal(estados[e], True)
+
+            for p in afdN2.finais:
+                if (e[1] == p):
+                    automato_uni.mudaEstadoFinal(estados[e], True)
+
+        return automato_uni
+
+    def diferenca_automato(self, afdN2):
+        estados = dict()
+        automato_dif = AutomatoFD(self.alfabeto)
+        numA1 = len(self.estados)
+        numA2 = len(afdN2.estados)
+        count = 1
+
+        estadosTotaisMult = (numA1 * numA2) + 1
+
+        for i in range(1, estadosTotaisMult):
+            automato_dif.criaEstado(i)
+
+        for i in range(1, numA1 + 1):
+            for p in range(1, numA2 + 1):
+                estados[(i, p)] = count
+                count += 1
+
+        # print("ESTADOS: ", estados)
+        # print(self.transicoes)
+        # print(afdN2.transicoes)
+
+        for i in range(1, numA1 + 1):
+            for p in range(1, numA2 + 1):
+                for l in list(self.alfabeto):
+                    automato_dif.criaTransicao(estados[(i, p)],
+                                               estados[(self.transicoes[(i, l)], afdN2.transicoes[(p, l)])], l)
+
+        automato_dif.inicial = estados[(self.inicial, afdN2.inicial)]
+        estadosFinais = dict()
+        naoFinais = [estado for estado in afdN2.estados if estado not in afdN2.finais]
+        count = 1
+        for i in self.finais:
+            for p in naoFinais:
+                estadosFinais[(i, p)] = count
+                count += 1
+
+        for p in estadosFinais:
+            if (p in estados.keys()):
+                automato_dif.mudaEstadoFinal(estados[p], True)
+
+        # print(naoFinais)
+        # print(estadosFinais)
+        # print(automato_dif)
+        return automato_dif
+
+    def complemento_automato(self):
 
         automato_comp = self.copiarAFD()
 
         for i in automato_comp.estados:
             if i in automato_comp.finais:
-                automato_comp.mudaEstadoFinal(i,False)
+                automato_comp.mudaEstadoFinal(i, False)
             else:
-                automato_comp.mudaEstadoFinal(i,True)
+                automato_comp.mudaEstadoFinal(i, True)
         return automato_comp
 
     def estadosEquivalentes(self):
@@ -198,7 +351,7 @@ class AutomatoFD:
         s += '}'
         return s
 
-    def salvarArquivo(self,nome):
+    def salvarArquivo(self, nome):
         # salvando no modelo do JFLAP
         try:
 
@@ -217,7 +370,7 @@ class AutomatoFD:
                 else:
                     arqObj.write("\n<state id=\"{}\" name =\"q{}\" >\n".format(i, i))
                     if i == self.inicial:  # verifica se o estado a ser salvo é inicial e salva
-                        if i in self.finais: #se o estado inicial também for final
+                        if i in self.finais:  # se o estado inicial também for final
                             arqObj.write("<initial/>\n<final/>\n</state>")
                         else:
                             arqObj.write("<initial/>\n</state>")
@@ -237,7 +390,8 @@ class AutomatoFD:
             for (i, j) in self.transicoes.keys():
                 d = self.transicoes[(i, j)]
                 arqObj.write(
-                    "\n<transition>\n\t<from>{}</from>\n\t<to>{}</to>\n\t<read>{}</read>\n\t</transition>".format(i, d, j))
+                    "\n<transition>\n\t<from>{}</from>\n\t<to>{}</to>\n\t<read>{}</read>\n\t</transition>".format(i, d,
+                                                                                                                  j))
 
             arqObj.write("\n\t</automaton>")
             arqObj.write("\n</structure>")
@@ -251,15 +405,14 @@ class AutomatoFD:
 
 
 def importarAFD(diretorio):
-
     try:
 
         alfabeto = ''
         Estado = 1
-        arq = open(diretorio,"r")
+        arq = open(diretorio, "r")
         raiz = ET.parse(arq).getroot()
 
-        #obtendo o alfabeto
+        # obtendo o alfabeto
         for filho in raiz:
             for f in filho:
                 if f.tag == 'transition':
@@ -291,7 +444,7 @@ def importarAFD(diretorio):
                         if s.tag == 'initial':
                             AFD.mudaEstadoInicial(Estado)
                         if s.tag == 'final':
-                            AFD.mudaEstadoFinal(Estado,True)
+                            AFD.mudaEstadoFinal(Estado, True)
 
                     Estado = Estado + 1
 
@@ -300,7 +453,7 @@ def importarAFD(diretorio):
                     simbolo = ''
                     destino = -1
 
-                    #Transiçoes
+                    # Transiçoes
                     for t in f:
                         if t.tag == 'from':
                             origem = int(t.text) + 1
@@ -310,7 +463,7 @@ def importarAFD(diretorio):
                         elif t.tag == 'to':
                             destino = int(t.text) + 1
 
-                    AFD.criaTransicao(origem, destino,simbolo)
+                    AFD.criaTransicao(origem, destino, simbolo)
 
         arq.close()
         #AFD.funcao = input("\nDefina a função do Automato: ")
