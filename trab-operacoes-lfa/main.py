@@ -50,25 +50,6 @@ if __name__ == '__main__':
     #print(afd.guritimo_complemento())
     #print("###")
 
-    #AFD_importado = importarAFD("AFDTeste.jff")
-    #print("###Importando Automato...###")
-    #print(AFD_importado)
-    afd.estadosEquivalentes()
-
-
-    # cadeia = 'abbabaabbbbbba'
-    # afd.limpaAfd()
-    # parada = afd.move(cadeia)
-    # if not afd.deuErro() and afd.estadoFinal(parada):
-    #     print('Aceita cadeia "{}"'.format(cadeia))
-    # else:
-    #     print('Rejeita cadeia "{}"'.format(cadeia))
-    #
-    #
-    # AFD_importado = importarAFD("AFDTeste.jff")
-    # print("###Importando Automato...###")
-    # print(AFD_importado)
-
     # print("\n ###MULTIPLICAÇAO E UNIÃO###")
     #
     # afdM1 = AutomatoFD('ab');
@@ -111,11 +92,18 @@ if __name__ == '__main__':
     # print(afdM1.uniao_automato(afdM2))
     # print(afdM1.diferenca_automato(afdM2))
 
+    AFD_importado = importarAFD("AFDTeste.jff")
+    print("###Importando Automato...###")
+    print(AFD_importado)
+    afd.automatoMinimo()
+    afd.salvarArquivo("AFDTesteSalvoMin")
+
     #afd2 = importarAFD("AFDTeste2.jff")
     #print(afd2)
-    #afd2.estadosEquivalentes()
-
-
+    #afd2.automatoMinimo()
+    #print("\nAutomato depois de minimizar")
+    #print(afd2)
+    #afd2.salvarArquivo("AFDTeste2SalvoMin")
 
 
   

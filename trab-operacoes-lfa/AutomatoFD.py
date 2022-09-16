@@ -1,7 +1,4 @@
 import xml.etree.ElementTree as ET
-import numpy as np
-
-
 
 class AutomatoFD:
 
@@ -13,8 +10,6 @@ class AutomatoFD:
         self.inicial = None
         self.finais = set()
         self.funcao = None
-        self.qtdEstados = 0
-        self.qtdTransicoes = 0
 
     def limpaAfd(self):
         self.__deuErro = False
@@ -121,6 +116,7 @@ class AutomatoFD:
 
         automato_mult.inicial = estados[(self.inicial, afdN2.inicial)]
         return automato_mult
+
     def intersecao_automato(self, afdN2):
         estados = dict()
         automato_mult = AutomatoFD(self.alfabeto)
@@ -200,6 +196,7 @@ class AutomatoFD:
         return automato_uni
 
     def diferenca_automato(self, afdN2):
+
         estados = dict()
         automato_dif = AutomatoFD(self.alfabeto)
         numA1 = len(self.estados)
@@ -255,6 +252,30 @@ class AutomatoFD:
                 automato_comp.mudaEstadoFinal(i, True)
         return automato_comp
 
+    def automatoMinimo(self):
+
+        estadosEquivalentes = self.estadosEquivalentes()
+
+        # quem joga pra aquele estado, agora vai jogar pro seu equivalente
+        for par in estadosEquivalentes:
+            #print(par)
+            qi,qj = par
+            for char in self.alfabeto:
+                for i in range(1,len(self.estados) + 1):
+                    for j in range(1,len(self.estados) + 1):
+                        if (i,char) in self.transicoes.keys() and self.transicoes[(i,char)] == qi: #encontra transições onde apareça o estado qi
+                            #print(f"{i,char} -> {qi}, agora vai pra", end = "")
+                            self.transicoes[(i,char)] = qj #qj receberá o que antes entrava em qi
+                            #print(f" {self.transicoes[(i,char)]}")
+
+            #excluindo as transicoes
+            for char in self.alfabeto:
+                #print(f"removendo transicao {qi,char}")
+                self.transicoes.pop((qi,char))
+
+            #print(f"removendo estado {qi}")
+            self.estados.remove(qi)
+
     def estadosEquivalentes(self):
 
         tblEq = self.obterTrivialmenteNaoEquivalentes()
@@ -268,19 +289,51 @@ class AutomatoFD:
                         for char in self.alfabeto:
                             qi = self.transicoes[(i,char)]
                             qj = self.transicoes[(j,char)]
-                            print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
+                            #print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
                             if qi != qj: #nao analisa tuplas iguais
                                 if tblEq[(qi,qj)] == False: #Sao trivialmente não equivalentes
-                                    print("marca false")
+                                    #print("marca false")
+                                    if len(tblEq[(i,j)]) > 0:
+                                        tblEq = self.marcarLembretes(tblEq,i,j)
                                     tblEq[(i,j)] = False
                                     tblEq[(j,i)] = False
                                     break
                                 else: #Não sei
-                                    print("não sei, append")
-                                    tblEq[(qi,qj)].append((i,j))
-                                    tblEq[(qj,qi)].append((i,j))
+                                    #print("não sei, append")
+                                    if (i,j) not in tblEq[(qi,qj)]: #lembrete repetido não entra
+                                        tblEq[(qi,qj)].append((i,j))
+                                        tblEq[(qj,qi)].append((i,j))
 
-        self.printTbl(tblEq,True)
+        #Percorrendo novamente o dicionário para obter os estados Equivalentes
+        equivalentes = []
+        for i in range(2, len(self.estados) + 1):
+            for j in range(1, len(self.estados)):
+                if i == j:
+                    break
+                else:
+                    if tblEq[(i, j)] != False:
+                        equivalentes.append((i,j))
+
+        return equivalentes
+
+    def marcarLembretes(self,tblEq,i,j):
+
+        lista = tblEq[(i,j)]
+        #print(f"lembrete no {i,j}: {lista}")
+
+        if lista:
+            for tupla in lista:
+                qi,qj = tupla
+                #print(f"while lembrete: {qi, qj}")
+                t = tblEq[(qi, qj)]
+                if type(t) is list:
+                    if len(t) > 0:
+                        tblEq = self.marcarLembretes(tblEq, qi, qj)
+                    #print(f"marcando {qi,qj} como false")
+                    tblEq[(qi, qj)] = False
+                    tblEq[(qj, qi)] = False
+
+        return tblEq
 
     def printTbl(self,tblEq,printaSomenteEquivalentes):
 
@@ -355,28 +408,22 @@ class AutomatoFD:
             arqObj.write("\n\t\t<automaton>")
 
             # Montagem AFD
-            i = 1
             # Salvando os estados
-            while True:
+            for i in self.estados:
 
-                if i == self.qtdEstados + 1:
-                    break
-                else:
-                    arqObj.write("\n<state id=\"{}\" name =\"q{}\" >\n".format(i, i))
-                    if i == self.inicial:  # verifica se o estado a ser salvo é inicial e salva
-                        if i in self.finais:  # se o estado inicial também for final
-                            arqObj.write("<initial/>\n<final/>\n</state>")
-                        else:
-                            arqObj.write("<initial/>\n</state>")
-                    elif i in self.finais:  # verifica se o estado a ser salvo é final e salva
-                        arqObj.write("<final/>\n</state>")
+                arqObj.write("\n<state id=\"{}\" name =\"q{}\" >\n".format(i, i))
+                if i == self.inicial:  # verifica se o estado a ser salvo é inicial e salva
+                    if i in self.finais:  # se o estado inicial também for final
+                        arqObj.write("<initial/>\n<final/>\n</state>")
                     else:
-                        arqObj.write("</state>")
-                i = i + 1
+                        arqObj.write("<initial/>\n</state>")
+                elif i in self.finais:  # verifica se o estado a ser salvo é final e salva
+                    arqObj.write("<final/>\n</state>")
+                else:
+                    arqObj.write("</state>")
+
 
             # Salvando as transicoes
-            i = 1
-
             #i = Estado atual
             #d = Proximo Estado
             #j = String lida
