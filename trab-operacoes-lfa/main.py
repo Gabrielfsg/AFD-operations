@@ -92,11 +92,11 @@ if __name__ == '__main__':
     # print(afdM1.uniao_automato(afdM2))
     # print(afdM1.diferenca_automato(afdM2))
 
-    AFD_importado = importarAFD("AFDTeste.jff")
-    print("###Importando Automato...###")
-    print(AFD_importado)
-    afd.automatoMinimo()
-    afd.salvarArquivo("AFDTesteSalvoMin")
+    # AFD_importado = importarAFD("AFDTeste.jff")
+    # print("###Importando Automato...###")
+    # print(AFD_importado)
+    # afd.automatoMinimo()
+    # afd.salvarArquivo("AFDTesteSalvoMin")
 
     #afd2 = importarAFD("AFDTeste2.jff")
     #print(afd2)
@@ -104,6 +104,44 @@ if __name__ == '__main__':
     #print("\nAutomato depois de minimizar")
     #print(afd2)
     #afd2.salvarArquivo("AFDTeste2SalvoMin")
+
+    print("\n ###EQUIVALENCIA AUTOMATOS###")
+
+    afdM3 = AutomatoFD('ab');
+    afdM4 = AutomatoFD('ab');
+
+    for i in range(1, 4):
+        afdM3.criaEstado(i)
+
+    for i in range(1, 3):
+        afdM4.criaEstado(i)
+
+    afdM3.criaTransicao(1, 2, 'b')
+    afdM3.criaTransicao(1, 3, 'a')
+    afdM3.criaTransicao(2, 2, 'b')
+    afdM3.criaTransicao(2, 1, 'a')
+    afdM3.criaTransicao(3, 2, 'b')
+    afdM3.criaTransicao(3, 3, 'a')
+
+    afdM4.criaTransicao(1, 1, 'b')
+    afdM4.criaTransicao(1, 2, 'a')
+    afdM4.criaTransicao(2, 2, 'b')
+    afdM4.criaTransicao(2, 1, 'a')
+
+    afdM3.mudaEstadoInicial(1)
+    afdM4.mudaEstadoInicial(1)
+
+    afdM3.mudaEstadoFinal(2, True)
+    afdM4.mudaEstadoFinal(2, True)
+
+    print(afdM3)
+    print(afdM4)
+
+    print(afdM3.automatoEquivalentes(afdM4))
+
+
+
+
 
 
   

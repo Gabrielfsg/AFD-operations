@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 
+
 class AutomatoFD:
 
     def __init__(self, Alfabeto):
@@ -86,6 +87,75 @@ class AutomatoFD:
         AFD_Copia.qtdTransicoes = self.qtdTransicoes
 
         return AFD_Copia
+
+    def automatoEquivalentes(self, afd2):
+        if (self.alfabeto != afd2.alfabeto):
+            return "O alfabeto deve ser o mesmo nos dois automatos."
+
+        afdValidacao = AutomatoFD(self.alfabeto)
+        count = 1
+
+        for i in self.estados:
+            afdValidacao.criaEstado(count)
+            if ((i) in self.finais):
+                afdValidacao.mudaEstadoFinal(count, True)
+            count += 1
+
+        for i in afd2.estados:
+            afdValidacao.criaEstado(count)
+            if ((i) in self.finais):
+                afdValidacao.mudaEstadoFinal(count, True)
+            count += 1
+
+        afdValidacao.mudaEstadoInicial(self.inicial)
+        tblEq = afdValidacao.obterTrivialmenteNaoEquivalentes()
+        print(afdValidacao)
+        print(tblEq)
+
+        for i in range(2, len(self.estados) + 1):
+            for j in range(1, len(afd2.estados)):
+                if i == j:
+                    break
+                else:
+                    if tblEq[(i, j)] != False:
+                        for char in self.alfabeto:
+                            qi = self.transicoes[(i, char)]
+                            qj = afd2.transicoes[(j, char)]
+                            # print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
+                            if qi != qj:  # nao analisa tuplas iguais
+                                if tblEq[(qi, qj)] == False:  # Sao trivialmente não equivalentes
+                                    # print("marca false")
+                                    if len(tblEq[(i, j)]) > 0:
+                                        tblEq = self.marcarLembretes(tblEq, i, j)
+                                    tblEq[(i, j)] = False
+                                    tblEq[(j, i)] = False
+                                    break
+                                else:  # Não sei
+                                    # print("não sei, append")
+                                    if (i, j) not in tblEq[(qi, qj)]:  # lembrete repetido não entra
+                                        tblEq[(qi, qj)].append((i, j))
+                                        tblEq[(qj, qi)].append((i, j))
+
+        # Percorrendo novamente o dicionário para obter os estados Equivalentes
+        equivalentes = []
+        for i in range(2, len(self.estados) + 1):
+            for j in range(1, len(afd2.estados)):
+                if i == j:
+                    break
+                else:
+                    if tblEq[(i, j)] != False:
+                        equivalentes.append((i, j))
+
+        if(len(equivalentes) == 0):
+            return "Os Automatos não são equivalentes. "
+        else:
+            if( (self.inicial, len(self.estados) + 1) in equivalentes or (len(self.estados) + 1, self.inicial) in equivalentes):
+                return "Os Automatos são equivalentes. "
+            else:
+                return "Os Automatos não são equivalentes. "
+
+
+
 
     def multiplicacao_automato(self, afdN2):
         estados = dict()
@@ -258,53 +328,54 @@ class AutomatoFD:
 
         # quem joga pra aquele estado, agora vai jogar pro seu equivalente
         for par in estadosEquivalentes:
-            #print(par)
-            qi,qj = par
+            # print(par)
+            qi, qj = par
             for char in self.alfabeto:
-                for i in range(1,len(self.estados) + 1):
-                    for j in range(1,len(self.estados) + 1):
-                        if (i,char) in self.transicoes.keys() and self.transicoes[(i,char)] == qi: #encontra transições onde apareça o estado qi
-                            #print(f"{i,char} -> {qi}, agora vai pra", end = "")
-                            self.transicoes[(i,char)] = qj #qj receberá o que antes entrava em qi
-                            #print(f" {self.transicoes[(i,char)]}")
+                for i in range(1, len(self.estados) + 1):
+                    for j in range(1, len(self.estados) + 1):
+                        if (i, char) in self.transicoes.keys() and self.transicoes[
+                            (i, char)] == qi:  # encontra transições onde apareça o estado qi
+                            # print(f"{i,char} -> {qi}, agora vai pra", end = "")
+                            self.transicoes[(i, char)] = qj  # qj receberá o que antes entrava em qi
+                            # print(f" {self.transicoes[(i,char)]}")
 
-            #excluindo as transicoes
+            # excluindo as transicoes
             for char in self.alfabeto:
-                #print(f"removendo transicao {qi,char}")
-                self.transicoes.pop((qi,char))
+                # print(f"removendo transicao {qi,char}")
+                self.transicoes.pop((qi, char))
 
-            #print(f"removendo estado {qi}")
+            # print(f"removendo estado {qi}")
             self.estados.remove(qi)
 
     def estadosEquivalentes(self):
 
         tblEq = self.obterTrivialmenteNaoEquivalentes()
 
-        for i in range(2,len(self.estados) + 1):
-            for j in range(1,len(self.estados)):
+        for i in range(2, len(self.estados) + 1):
+            for j in range(1, len(self.estados)):
                 if i == j:
                     break
                 else:
-                    if tblEq[(i,j)] != False:
+                    if tblEq[(i, j)] != False:
                         for char in self.alfabeto:
-                            qi = self.transicoes[(i,char)]
-                            qj = self.transicoes[(j,char)]
-                            #print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
-                            if qi != qj: #nao analisa tuplas iguais
-                                if tblEq[(qi,qj)] == False: #Sao trivialmente não equivalentes
-                                    #print("marca false")
-                                    if len(tblEq[(i,j)]) > 0:
-                                        tblEq = self.marcarLembretes(tblEq,i,j)
-                                    tblEq[(i,j)] = False
-                                    tblEq[(j,i)] = False
+                            qi = self.transicoes[(i, char)]
+                            qj = self.transicoes[(j, char)]
+                            # print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
+                            if qi != qj:  # nao analisa tuplas iguais
+                                if tblEq[(qi, qj)] == False:  # Sao trivialmente não equivalentes
+                                    # print("marca false")
+                                    if len(tblEq[(i, j)]) > 0:
+                                        tblEq = self.marcarLembretes(tblEq, i, j)
+                                    tblEq[(i, j)] = False
+                                    tblEq[(j, i)] = False
                                     break
-                                else: #Não sei
-                                    #print("não sei, append")
-                                    if (i,j) not in tblEq[(qi,qj)]: #lembrete repetido não entra
-                                        tblEq[(qi,qj)].append((i,j))
-                                        tblEq[(qj,qi)].append((i,j))
+                                else:  # Não sei
+                                    # print("não sei, append")
+                                    if (i, j) not in tblEq[(qi, qj)]:  # lembrete repetido não entra
+                                        tblEq[(qi, qj)].append((i, j))
+                                        tblEq[(qj, qi)].append((i, j))
 
-        #Percorrendo novamente o dicionário para obter os estados Equivalentes
+        # Percorrendo novamente o dicionário para obter os estados Equivalentes
         equivalentes = []
         for i in range(2, len(self.estados) + 1):
             for j in range(1, len(self.estados)):
@@ -312,68 +383,68 @@ class AutomatoFD:
                     break
                 else:
                     if tblEq[(i, j)] != False:
-                        equivalentes.append((i,j))
+                        equivalentes.append((i, j))
 
         return equivalentes
 
-    def marcarLembretes(self,tblEq,i,j):
+    def marcarLembretes(self, tblEq, i, j):
 
-        lista = tblEq[(i,j)]
-        #print(f"lembrete no {i,j}: {lista}")
+        lista = tblEq[(i, j)]
+        # print(f"lembrete no {i,j}: {lista}")
 
         if lista:
             for tupla in lista:
-                qi,qj = tupla
-                #print(f"while lembrete: {qi, qj}")
+                qi, qj = tupla
+                # print(f"while lembrete: {qi, qj}")
                 t = tblEq[(qi, qj)]
                 if type(t) is list:
                     if len(t) > 0:
                         tblEq = self.marcarLembretes(tblEq, qi, qj)
-                    #print(f"marcando {qi,qj} como false")
+                    # print(f"marcando {qi,qj} como false")
                     tblEq[(qi, qj)] = False
                     tblEq[(qj, qi)] = False
 
         return tblEq
 
-    def printTbl(self,tblEq,printaSomenteEquivalentes):
+    def printTbl(self, tblEq, printaSomenteEquivalentes):
 
         print("Tabela de Equivalencia")
         if printaSomenteEquivalentes:
-            for i in range(2,len(self.estados) + 1):
+            for i in range(2, len(self.estados) + 1):
                 print(f"{i}| ", end="")
-                for j in range(1,len(self.estados)):
+                for j in range(1, len(self.estados)):
                     if i == j:
                         break
                     else:
-                        print(f"{tblEq[(i,j)]}, ", end="")
+                        print(f"{tblEq[(i, j)]}, ", end="")
                 print("\n")
 
     def obterTrivialmenteNaoEquivalentes(self):
 
         tblEquiv = dict()
 
-        for i in range(2,len(self.estados) + 1):
-            for j in range(1,len(self.estados)):
+        for i in range(2, len(self.estados) + 1):
+            for j in range(1, len(self.estados)):
                 if i == j:
                     break
                 else:
-                    if self.trivialmenteNaoEquiv(i,j):
-                        tblEquiv[(i,j)] = False
-                        tblEquiv[(j,i)] = False
+                    if self.trivialmenteNaoEquiv(i, j):
+                        tblEquiv[(i, j)] = False
+                        tblEquiv[(j, i)] = False
                     else:
-                        tblEquiv[(i,j)] = []
-                        tblEquiv[(j,i)] = []
+                        tblEquiv[(i, j)] = []
+                        tblEquiv[(j, i)] = []
 
         return tblEquiv
 
     def trivialmenteNaoEquiv(self, qj, qi):
-        if qi in self.finais and qj in self.finais: #se forem finais
+        if qi in self.finais and qj in self.finais:  # se forem finais
             return False
-        if qi in self.finais and qj not in self.finais: #se i for final e j nao(nao equiv)
+        if qi in self.finais and qj not in self.finais:  # se i for final e j nao(nao equiv)
             return True
-        if qi not in self.finais and qj in self.finais: #se j for final e i nao(nao equiv)
+        if qi not in self.finais and qj in self.finais:  # se j for final e i nao(nao equiv)
             return True
-        if qi not in self.finais and qj not in self.finais: #se nenhum for final
+        if qi not in self.finais and qj not in self.finais:  # se nenhum for final
             return False
 
     def __str__(self):
@@ -422,11 +493,10 @@ class AutomatoFD:
                 else:
                     arqObj.write("</state>")
 
-
             # Salvando as transicoes
-            #i = Estado atual
-            #d = Proximo Estado
-            #j = String lida
+            # i = Estado atual
+            # d = Proximo Estado
+            # j = String lida
 
             for (i, j) in self.transicoes.keys():
                 d = self.transicoes[(i, j)]
@@ -441,8 +511,6 @@ class AutomatoFD:
             print("\nAFD salvo com sucesso !")
         except Exception as Erro:
             print("\nErro ao salvar o arquivo ! {}".format(Erro))
-
-
 
 
 def importarAFD(diretorio):
@@ -468,7 +536,7 @@ def importarAFD(diretorio):
         AFD = AutomatoFD(alfabeto)
 
         Estado = 1
-        #contando os estados
+        # contando os estados
         for filho in raiz:
             for f in filho:
                 if f.tag == 'state':
@@ -476,7 +544,7 @@ def importarAFD(diretorio):
                     Estado = Estado + 1
 
         Estado = 1
-        #obtendo estados iniciais, finais e transicoes
+        # obtendo estados iniciais, finais e transicoes
         for filho in raiz:
             for f in filho:
                 # conjunto de estados
@@ -507,7 +575,7 @@ def importarAFD(diretorio):
                     AFD.criaTransicao(origem, destino, simbolo)
 
         arq.close()
-        #AFD.funcao = input("\nDefina a função do Automato: ")
+        # AFD.funcao = input("\nDefina a função do Automato: ")
         print("\nAFD importado com sucesso !")
         return AFD
 
