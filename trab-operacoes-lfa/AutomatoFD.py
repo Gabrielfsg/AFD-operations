@@ -112,14 +112,55 @@ class AutomatoFD:
         print(afdValidacao)
         print(tblEq)
 
+        for i in range(2, len(afdValidacao.estados) + 1):
+            for j in range(1, len(afdValidacao.estados)):
+                if i == j:
+                    break
+                else:
+                    if tblEq[(i, j)] != False:
+                        for char in self.alfabeto:
+                            if(i <= len(self.estados)):
+                                qi = self.transicoes[(i, char)]
+                            else:
+                                qi = afd2.transicoes[(i - len(self.estados), char)]
 
-        # if(len(equivalentes) == 0):
-        #     return "Os Automatos não são equivalentes. "
-        # else:
-        #     if( (self.inicial, len(self.estados) + 1) in equivalentes or (len(self.estados) + 1, self.inicial) in equivalentes):
-        #         return "Os Automatos são equivalentes. "
-        #     else:
-        #         return "Os Automatos não são equivalentes. "
+                            if (j <= len(self.estados)):
+                                qj = self.transicoes[(j, char)]
+                            else:
+                                qj = afd2.transicoes[(j - len(self.estados), char)]
+                            # print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
+                            if qi != qj:  # nao analisa tuplas iguais
+                                if tblEq[(qi, qj)] == False:  # Sao trivialmente não equivalentes
+                                    # print("marca false")
+                                    if len(tblEq[(i, j)]) > 0:
+                                        tblEq = self.marcarLembretes(tblEq, i, j)
+                                    tblEq[(i, j)] = False
+                                    tblEq[(j, i)] = False
+                                    break
+                                else:  # Não sei
+                                    # print("não sei, append")
+                                    if (i, j) not in tblEq[(qi, qj)]:  # lembrete repetido não entra
+                                        tblEq[(qi, qj)].append((i, j))
+                                        tblEq[(qj, qi)].append((i, j))
+
+        # Percorrendo novamente o dicionário para obter os estados Equivalentes
+        equivalentes = []
+        for i in range(2, len(afdValidacao.estados) + 1):
+            for j in range(1, len(afdValidacao.estados)):
+                if i == j:
+                    break
+                else:
+                    if tblEq[(i, j)] != False:
+                        equivalentes.append((i, j))
+
+
+        if(len(equivalentes) == 0):
+            return "Os Automatos não são equivalentes. "
+        else:
+            if( (self.inicial, len(self.estados) + 1) in equivalentes or (len(self.estados) + 1, self.inicial) in equivalentes):
+                return "Os Automatos são equivalentes. "
+            else:
+                return "Os Automatos não são equivalentes. "
 
 
 
