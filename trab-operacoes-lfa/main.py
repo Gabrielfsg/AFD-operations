@@ -124,7 +124,7 @@ if __name__ == '__main__':
     afdM3.criaTransicao(3, 3, 'a')
 
     afdM4.criaTransicao(1, 1, 'b')
-    afdM4.criaTransicao(1, 2, 'a')
+    afdM4.criaTransicao(1, 1, 'a')
     afdM4.criaTransicao(2, 2, 'b')
     afdM4.criaTransicao(2, 1, 'a')
 
@@ -134,10 +134,15 @@ if __name__ == '__main__':
     afdM3.mudaEstadoFinal(2, True)
     afdM4.mudaEstadoFinal(2, True)
 
-    print(afdM3)
-    print(afdM4)
+    #print(afdM3)
+    #print(afdM4)
 
     print(afdM3.automatoEquivalentes(afdM4))
+
+    #afdM3.salvarArquivo("AFDM3")
+    #afdM4.salvarArquivo("AFDM4")
+
+
 
 
 

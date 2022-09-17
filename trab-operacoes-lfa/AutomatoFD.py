@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-
+import os,threading
 
 class AutomatoFD:
 
@@ -89,28 +89,29 @@ class AutomatoFD:
         return AFD_Copia
 
     def automatoEquivalentes(self, afd2):
+
         if (self.alfabeto != afd2.alfabeto):
             return "O alfabeto deve ser o mesmo nos dois automatos."
 
         afdValidacao = AutomatoFD(self.alfabeto)
-        count = 1
 
+        count = 1
         for i in self.estados:
             afdValidacao.criaEstado(count)
-            if ((i) in self.finais):
+            if i in self.finais:
                 afdValidacao.mudaEstadoFinal(count, True)
             count += 1
 
         for i in afd2.estados:
             afdValidacao.criaEstado(count)
-            if ((i) in self.finais):
+            if i in afd2.finais:
                 afdValidacao.mudaEstadoFinal(count, True)
             count += 1
 
         afdValidacao.mudaEstadoInicial(self.inicial)
         tblEq = afdValidacao.obterTrivialmenteNaoEquivalentes()
-        print(afdValidacao)
-        print(tblEq)
+        #print(afdValidacao)
+        self.printTbl(tblEq,count)
 
         for i in range(2, len(afdValidacao.estados) + 1):
             for j in range(1, len(afdValidacao.estados)):
@@ -119,51 +120,23 @@ class AutomatoFD:
                 else:
                     if tblEq[(i, j)] != False:
                         for char in self.alfabeto:
-                            if(i <= len(self.estados)):
+
+                            if i <= len(self.estados):
                                 qi = self.transicoes[(i, char)]
                             else:
-                                qi = afd2.transicoes[(i - len(self.estados), char)]
+                                qi = afd2.transicoes[(i - len(self.estados), char)] + len(self.estados)
 
-                            if (j <= len(self.estados)):
+                            if j <= len(self.estados):
                                 qj = self.transicoes[(j, char)]
                             else:
-                                qj = afd2.transicoes[(j - len(self.estados), char)]
+                                qj = afd2.transicoes[(j - len(self.estados), char)] + len(self.estados)
+
                             # print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
                             if qi != qj:  # nao analisa tuplas iguais
-                                if tblEq[(qi, qj)] == False:  # Sao trivialmente não equivalentes
-                                    # print("marca false")
-                                    if len(tblEq[(i, j)]) > 0:
-                                        tblEq = self.marcarLembretes(tblEq, i, j)
-                                    tblEq[(i, j)] = False
-                                    tblEq[(j, i)] = False
-                                    break
-                                else:  # Não sei
-                                    # print("não sei, append")
-                                    if (i, j) not in tblEq[(qi, qj)]:  # lembrete repetido não entra
-                                        tblEq[(qi, qj)].append((i, j))
-                                        tblEq[(qj, qi)].append((i, j))
+                                if tblEq[(qi, qj)] == False:  # Estados não equivalentes, logo, os AFDs nao sao equiv.
+                                    return "Os automatos nao são equivalentes"
 
-        # Percorrendo novamente o dicionário para obter os estados Equivalentes
-        equivalentes = []
-        for i in range(2, len(afdValidacao.estados) + 1):
-            for j in range(1, len(afdValidacao.estados)):
-                if i == j:
-                    break
-                else:
-                    if tblEq[(i, j)] != False:
-                        equivalentes.append((i, j))
-
-
-        if(len(equivalentes) == 0):
-            return "Os Automatos não são equivalentes. "
-        else:
-            if( (self.inicial, len(self.estados) + 1) in equivalentes or (len(self.estados) + 1, self.inicial) in equivalentes):
-                return "Os Automatos são equivalentes. "
-            else:
-                return "Os Automatos não são equivalentes. "
-
-
-
+        return "Os automatos sao equivalentes"
 
     def multiplicacao_automato(self, afdN2):
         estados = dict()
@@ -414,18 +387,18 @@ class AutomatoFD:
 
         return tblEq
 
-    def printTbl(self, tblEq, printaSomenteEquivalentes):
+    def printTbl(self, tblEq,count):
 
         print("Tabela de Equivalencia")
-        if printaSomenteEquivalentes:
-            for i in range(2, len(self.estados) + 1):
-                print(f"{i}| ", end="")
-                for j in range(1, len(self.estados)):
-                    if i == j:
-                        break
-                    else:
-                        print(f"{tblEq[(i, j)]}, ", end="")
-                print("\n")
+
+        for i in range(2,count):
+            print(f"{i}| ", end="")
+            for j in range(1, count):
+                if i == j:
+                    break
+                else:
+                    print(f"{tblEq[(i, j)]}, ", end="")
+            print("\n")
 
     def obterTrivialmenteNaoEquivalentes(self):
 
@@ -516,10 +489,17 @@ class AutomatoFD:
             arqObj.write("\n</structure>")
             arqObj.close()
 
+            threading.Thread(target=abrirJFLAP,args=(nome, )).start()
+
             print("\nAFD salvo com sucesso !")
         except Exception as Erro:
             print("\nErro ao salvar o arquivo ! {}".format(Erro))
 
+
+
+
+def abrirJFLAP(nomeArq):
+    os.system(f'cmd /k "java -jar JFLAP7.1.jar {nomeArq}.jff"')
 
 def importarAFD(diretorio):
     try:
