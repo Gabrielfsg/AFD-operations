@@ -98,49 +98,63 @@ if __name__ == '__main__':
     # afd.automatoMinimo()
     # afd.salvarArquivo("AFDTesteSalvoMin")
 
-    #afd2 = importarAFD("AFDTeste2.jff")
-    #print(afd2)
-    #afd2.automatoMinimo()
-    #print("\nAutomato depois de minimizar")
-    #print(afd2)
-    #afd2.salvarArquivo("AFDTeste2SalvoMin")
+    print("\n ###MINIMIZAÇÃO AUTOMATOS###")
 
-    print("\n ###EQUIVALENCIA AUTOMATOS###")
 
-    afdM3 = AutomatoFD('ab');
-    afdM4 = AutomatoFD('ab');
+    # afd2 = importarAFD("Automatos_Para_Teste/AFDTeste2.jff")
+    # print(afd2)
+    # afd2.automatoMinimo()
+    # print("\nAutomato depois de minimizar")
+    # print(afd2)
+    # afd2.salvarArquivo("AFDTeste2SalvoMin")
 
-    for i in range(1, 4):
-        afdM3.criaEstado(i)
+    afdPre_Sux = importarAFD('Automatos_Para_Teste/prefixo_ab-sufixo_ab.jff')
+    print(afdPre_Sux)
+    afdPre_Sux.automatoMinimo()
+    afdPre_Sux.salvarArquivo("teste")
 
-    for i in range(1, 3):
-        afdM4.criaEstado(i)
+    # afdDesconexo = importarAFD('Automatos_Para_Teste/AFDDESCONEXO.jff')
+    # print(afdDesconexo)
+    # afdDesconexo.automatoMinimo()
+    # #afdDesconexo.salvarArquivo('teste')
+    # print(afdDesconexo)
 
-    afdM3.criaTransicao(1, 2, 'b')
-    afdM3.criaTransicao(1, 3, 'a')
-    afdM3.criaTransicao(2, 2, 'b')
-    afdM3.criaTransicao(2, 1, 'a')
-    afdM3.criaTransicao(3, 2, 'b')
-    afdM3.criaTransicao(3, 3, 'a')
-
-    afdM4.criaTransicao(1, 1, 'b')
-    afdM4.criaTransicao(1, 1, 'a')
-    afdM4.criaTransicao(2, 2, 'b')
-    afdM4.criaTransicao(2, 1, 'a')
-
-    afdM3.mudaEstadoInicial(1)
-    afdM4.mudaEstadoInicial(1)
-
-    afdM3.mudaEstadoFinal(2, True)
-    afdM4.mudaEstadoFinal(2, True)
-
-    #print(afdM3)
-    #print(afdM4)
-
-    print(afdM3.automatoEquivalentes(afdM4))
-
-    #afdM3.salvarArquivo("AFDM3")
-    #afdM4.salvarArquivo("AFDM4")
+    # print("\n ###EQUIVALENCIA AUTOMATOS###")
+    #
+    # afdM3 = AutomatoFD('ab');
+    # afdM4 = AutomatoFD('ab');
+    #
+    # for i in range(1, 4):
+    #     afdM3.criaEstado(i)
+    #
+    # for i in range(1, 3):
+    #     afdM4.criaEstado(i)
+    #
+    # afdM3.criaTransicao(1, 2, 'b')
+    # afdM3.criaTransicao(1, 3, 'a')
+    # afdM3.criaTransicao(2, 2, 'b')
+    # afdM3.criaTransicao(2, 1, 'a')
+    # afdM3.criaTransicao(3, 2, 'b')
+    # afdM3.criaTransicao(3, 3, 'a')
+    #
+    # afdM4.criaTransicao(1, 1, 'b')
+    # afdM4.criaTransicao(1, 1, 'a')
+    # afdM4.criaTransicao(2, 2, 'b')
+    # afdM4.criaTransicao(2, 1, 'a')
+    #
+    # afdM3.mudaEstadoInicial(1)
+    # afdM4.mudaEstadoInicial(1)
+    #
+    # afdM3.mudaEstadoFinal(2, True)
+    # afdM4.mudaEstadoFinal(2, True)
+    #
+    # #print(afdM3)
+    # #print(afdM4)
+    #
+    # print(afdM3.automatoEquivalentes(afdM4))
+    #
+    # #afdM3.salvarArquivo("AFDM3")
+    # #afdM4.salvarArquivo("AFDM4")
 
 
 

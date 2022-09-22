@@ -305,7 +305,11 @@ class AutomatoFD:
 
     def automatoMinimo(self):
 
+        self.removerEstadosSemAlcance()
+
         estadosEquivalentes = self.estadosEquivalentes()
+
+        print(f"estados equivalentes: {estadosEquivalentes}")
 
         # quem joga pra aquele estado, agora vai jogar pro seu equivalente
         for par in estadosEquivalentes:
@@ -320,68 +324,104 @@ class AutomatoFD:
                             self.transicoes[(i, char)] = qj  # qj receberá o que antes entrava em qi
                             # print(f" {self.transicoes[(i,char)]}")
 
-            # excluindo as transicoes
-            for char in self.alfabeto:
+                # excluindo as transicoes
                 # print(f"removendo transicao {qi,char}")
                 self.transicoes.pop((qi, char))
 
             # print(f"removendo estado {qi}")
             self.estados.remove(qi)
 
+    def removerEstadosSemAlcance(self):
+
+        visitados = []
+        fila = [self.inicial]
+
+        while fila:
+            estado = fila.pop(0)
+            #print(f"estado sendo explorado: {estado}")
+            if estado not in visitados:
+                visitados.append(estado)
+                if estado == list(self.estados)[-1]: #se for o ultimo estado
+                    break
+                else: #olhando as transições
+                    try:
+                        for char in self.alfabeto:
+                            #print(f"add estados novos pra explorar: {estado,char} --> {self.transicoes[(estado,char)]}")
+                            fila.append(self.transicoes[(estado,char)])
+                    except Exception:
+                        pass
+
+        #print(f"visitados: {visitados}")
+
+        if(len(visitados) < len(self.estados)):
+            print("\nAtenção: foram encontrados estados inalcançáveis, os mesmos serão removidos")
+            for i in list(self.estados):
+                if i not in visitados:
+                    for char in self.alfabeto:
+                        del self.transicoes[(i, char)]
+                    self.estados.remove(i)
+
     def estadosEquivalentes(self):
 
         tblEq = self.obterTrivialmenteNaoEquivalentes()
 
-        for i in range(2, len(self.estados) + 1):
-            for j in range(1, len(self.estados)):
-                if i == j:
-                    break
-                else:
-                    if tblEq[(i, j)] != False:
-                        for char in self.alfabeto:
-                            qi = self.transicoes[(i, char)]
-                            qj = self.transicoes[(j, char)]
-                            # print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
-                            if qi != qj:  # nao analisa tuplas iguais
-                                if tblEq[(qi, qj)] == False:  # Sao trivialmente não equivalentes
-                                    # print("marca false")
-                                    if len(tblEq[(i, j)]) > 0:
-                                        tblEq = self.marcarLembretes(tblEq, i, j)
-                                    tblEq[(i, j)] = False
-                                    tblEq[(j, i)] = False
-                                    break
-                                else:  # Não sei
-                                    # print("não sei, append")
-                                    if (i, j) not in tblEq[(qi, qj)]:  # lembrete repetido não entra
-                                        tblEq[(qi, qj)].append((i, j))
-                                        tblEq[(qj, qi)].append((i, j))
+        try:
+            for i in range(2, len(self.estados) + 1):
+                for j in range(1, len(self.estados)):
+                    if i == j:
+                        break
+                    else:
+                        if tblEq[(i, j)] is not False and tblEq[(i, j)] is not None:
+                            for char in self.alfabeto:
+                                qi = self.transicoes[(i, char)]
+                                qj = self.transicoes[(j, char)]
+                                #print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
+                                if qi != qj:  # nao analisa tuplas iguais
+                                    if tblEq[(qi, qj)] == False:  # Sao trivialmente não equivalentes
+                                        #print("marca false")
+                                        if len(tblEq[(i, j)]) > 0:
+                                            tblEq = self.marcarLembretes(tblEq, i, j)
+                                        tblEq[(i, j)] = False
+                                        tblEq[(j, i)] = False
+                                        break
+                                    else:  # Não sei
+                                        #print("não sei, append")
+                                        if (i, j) not in tblEq[(qi, qj)]:  # lembrete repetido não entra
+                                            tblEq[(qi, qj)].append((i, j))
+                                            tblEq[(qj, qi)].append((i, j))
 
-        # Percorrendo novamente o dicionário para obter os estados Equivalentes
-        equivalentes = []
-        for i in range(2, len(self.estados) + 1):
-            for j in range(1, len(self.estados)):
-                if i == j:
-                    break
-                else:
-                    if tblEq[(i, j)] != False:
-                        equivalentes.append((i, j))
+            # Percorrendo novamente o dicionário para obter os estados Equivalentes
+            equivalentes = []
+            for i in range(2, len(self.estados) + 1):
+                for j in range(1, len(self.estados)):
+                    if i == j:
+                        break
+                    else:
+                        if tblEq[(i, j)] is not False and tblEq[(i, j)] is not None:
+                            equivalentes.append((i, j))
 
-        return equivalentes
+            return equivalentes
+
+        except Exception as erro:
+            print("Erro ao minimizar automato, verifique se o mesmo não contem estados com transições incompletas")
+            print(f'Descrição do erro: {erro}')
+
 
     def marcarLembretes(self, tblEq, i, j):
 
         lista = tblEq[(i, j)]
-        # print(f"lembrete no {i,j}: {lista}")
+        #print(f"lembrete no {i,j}: {lista}")
 
         if lista:
             for tupla in lista:
+                tblEq[(i,j)].remove(tupla)
                 qi, qj = tupla
-                # print(f"while lembrete: {qi, qj}")
+                #print(f"while lembrete: {qi, qj}")
                 t = tblEq[(qi, qj)]
                 if type(t) is list:
                     if len(t) > 0:
                         tblEq = self.marcarLembretes(tblEq, qi, qj)
-                    # print(f"marcando {qi,qj} como false")
+                    #print(f"marcando {qi,qj} como false")
                     tblEq[(qi, qj)] = False
                     tblEq[(qj, qi)] = False
 
