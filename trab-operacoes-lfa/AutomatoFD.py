@@ -316,10 +316,9 @@ class AutomatoFD:
             # print(par)
             qi, qj = par
             for char in self.alfabeto:
-                for i in range(1, len(self.estados) + 1):
-                    for j in range(1, len(self.estados) + 1):
-                        if (i, char) in self.transicoes.keys() and self.transicoes[
-                            (i, char)] == qi:  # encontra transições onde apareça o estado qi
+                for i in self.estados:
+                    for j in self.estados:
+                        if (i, char) in self.transicoes.keys() and self.transicoes[(i, char)] == qi:  # encontra transições onde apareça o estado qi
                             # print(f"{i,char} -> {qi}, agora vai pra", end = "")
                             self.transicoes[(i, char)] = qj  # qj receberá o que antes entrava em qi
                             # print(f" {self.transicoes[(i,char)]}")
