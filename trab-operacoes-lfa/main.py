@@ -92,31 +92,28 @@ if __name__ == '__main__':
     # print(afdM1.uniao_automato(afdM2))
     # print(afdM1.diferenca_automato(afdM2))
 
-    # AFD_importado = importarAFD("AFDTeste.jff")
-    # print("###Importando Automato...###")
-    # print(AFD_importado)
+
+    #print("\n ###MINIMIZAÇÃO AUTOMATOS###")
+
+    # print(afd)
     # afd.automatoMinimo()
-    # afd.salvarArquivo("AFDTesteSalvoMin")
 
-    print("\n ###MINIMIZAÇÃO AUTOMATOS###")
-
-
-    # afd2 = importarAFD("Automatos_Para_Teste/AFDTeste2.jff")
+    # afd2 = importarAFD("Automatos_Para_Teste/AFDTeste.jff")
     # print(afd2)
     # afd2.automatoMinimo()
     # print("\nAutomato depois de minimizar")
     # print(afd2)
     # afd2.salvarArquivo("AFDTeste2SalvoMin")
 
-    afdPre_Sux = importarAFD('Automatos_Para_Teste/prefixo_ab-sufixo_ab.jff')
-    print(afdPre_Sux)
-    afdPre_Sux.automatoMinimo()
-    afdPre_Sux.salvarArquivo("teste")
+    # afdPre_Sux = importarAFD('Automatos_Para_Teste/prefixo_ab-sufixo_ab.jff')
+    # print(afdPre_Sux)
+    # afdPre_Sux.automatoMinimo()
+    # afdPre_Sux.salvarArquivo("teste")
 
     # afdDesconexo = importarAFD('Automatos_Para_Teste/AFDDESCONEXO.jff')
     # print(afdDesconexo)
     # afdDesconexo.automatoMinimo()
-    # #afdDesconexo.salvarArquivo('teste')
+    # afdDesconexo.salvarArquivo('teste')
     # print(afdDesconexo)
 
     # print("\n ###EQUIVALENCIA AUTOMATOS###")

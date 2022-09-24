@@ -111,10 +111,10 @@ class AutomatoFD:
         afdValidacao.mudaEstadoInicial(self.inicial)
         tblEq = afdValidacao.obterTrivialmenteNaoEquivalentes()
         #print(afdValidacao)
-        self.printTbl(tblEq,count)
+        #self.printTbl(tblEq)
 
-        for i in range(2, len(afdValidacao.estados) + 1):
-            for j in range(1, len(afdValidacao.estados)):
+        for i in self.estados:
+            for j in self.estados:
                 if i == j:
                     break
                 else:
@@ -341,15 +341,13 @@ class AutomatoFD:
             #print(f"estado sendo explorado: {estado}")
             if estado not in visitados:
                 visitados.append(estado)
-                if estado == list(self.estados)[-1]: #se for o ultimo estado
-                    break
-                else: #olhando as transições
-                    try:
-                        for char in self.alfabeto:
-                            #print(f"add estados novos pra explorar: {estado,char} --> {self.transicoes[(estado,char)]}")
-                            fila.append(self.transicoes[(estado,char)])
-                    except Exception:
-                        pass
+                #olhando as transições
+                try:
+                    for char in self.alfabeto:
+                        #print(f"add estados novos pra explorar: {estado,char} --> {self.transicoes[(estado,char)]}")
+                        fila.append(self.transicoes[(estado,char)])
+                except Exception:
+                    pass
 
         #print(f"visitados: {visitados}")
 
@@ -366,8 +364,8 @@ class AutomatoFD:
         tblEq = self.obterTrivialmenteNaoEquivalentes()
 
         try:
-            for i in range(2, len(self.estados) + 1):
-                for j in range(1, len(self.estados)):
+            for i in self.estados:
+                for j in self.estados:
                     if i == j:
                         break
                     else:
@@ -392,8 +390,8 @@ class AutomatoFD:
 
             # Percorrendo novamente o dicionário para obter os estados Equivalentes
             equivalentes = []
-            for i in range(2, len(self.estados) + 1):
-                for j in range(1, len(self.estados)):
+            for i in self.estados:
+                for j in self.estados:
                     if i == j:
                         break
                     else:
@@ -427,13 +425,13 @@ class AutomatoFD:
 
         return tblEq
 
-    def printTbl(self, tblEq,count):
+    def printTbl(self, tblEq):
 
         print("Tabela de Equivalencia")
 
-        for i in range(2,count):
+        for i in self.estados:
             print(f"{i}| ", end="")
-            for j in range(1, count):
+            for j in self.estados:
                 if i == j:
                     break
                 else:
@@ -444,8 +442,8 @@ class AutomatoFD:
 
         tblEquiv = dict()
 
-        for i in range(2, len(self.estados) + 1):
-            for j in range(1, len(self.estados)):
+        for i in self.estados:
+            for j in self.estados:
                 if i == j:
                     break
                 else:
@@ -456,6 +454,7 @@ class AutomatoFD:
                         tblEquiv[(i, j)] = []
                         tblEquiv[(j, i)] = []
 
+        self.printTbl(tblEquiv)
         return tblEquiv
 
     def trivialmenteNaoEquiv(self, qj, qi):
@@ -563,29 +562,20 @@ def importarAFD(diretorio):
         # Cria o alfabeto
         AFD = AutomatoFD(alfabeto)
 
-        Estado = 1
         # contando os estados
         for filho in raiz:
             for f in filho:
                 if f.tag == 'state':
-                    AFD.criaEstado(Estado)
-                    Estado = Estado + 1
-
-        Estado = 1
-        # obtendo estados iniciais, finais e transicoes
-        for filho in raiz:
-            for f in filho:
-                # conjunto de estados
-                if f.tag == 'state':
+                    e = int(f.attrib['id'])
+                    AFD.criaEstado(e)
                     for s in f:
                         if s.tag == 'initial':
-                            AFD.mudaEstadoInicial(Estado)
+                            AFD.mudaEstadoInicial(e)
                         if s.tag == 'final':
-                            AFD.mudaEstadoFinal(Estado, True)
-
-                    Estado = Estado + 1
+                            AFD.mudaEstadoFinal(e, True)
 
                 elif f.tag == 'transition':
+
                     origem = -1
                     simbolo = ''
                     destino = -1
@@ -593,12 +583,12 @@ def importarAFD(diretorio):
                     # Transiçoes
                     for t in f:
                         if t.tag == 'from':
-                            origem = int(t.text) + 1
+                            origem = int(t.text)
                         elif t.tag == 'read':
                             if t.text is not None:
                                 simbolo = t.text
                         elif t.tag == 'to':
-                            destino = int(t.text) + 1
+                            destino = int(t.text)
 
                     AFD.criaTransicao(origem, destino, simbolo)
 
