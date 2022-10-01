@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     #afd.salvarArquivo("AFDTeste")
 
-    #print(afd)
+    print(afd)
 
     cadeia = 'abbabaabbbbbba'
     afd.limpaAfd()
@@ -46,9 +46,9 @@ if __name__ == '__main__':
     else:
         print('Rejeita cadeia "{}"'.format(cadeia))
 
-    #print("###COMPLEMENTO###")
-    #print(afd.guritimo_complemento())
-    #print("###")
+    # print("###COMPLEMENTO###")
+    # print(afd.complemento_automato())
+    # print("###")
 
     # print("\n ###MULTIPLICAÇAO E UNIÃO###")
     #

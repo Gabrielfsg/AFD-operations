@@ -83,8 +83,6 @@ class AutomatoFD:
         AFD_Copia.inicial = self.inicial
         AFD_Copia.finais = self.finais
         AFD_Copia.funcao = self.funcao
-        AFD_Copia.qtdEstados = self.qtdEstados
-        AFD_Copia.qtdTransicoes = self.qtdTransicoes
 
         return AFD_Copia
 
