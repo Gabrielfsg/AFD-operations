@@ -108,8 +108,8 @@ class AutomatoFD:
 
         afdValidacao.mudaEstadoInicial(self.inicial)
         tblEq = afdValidacao.obterTrivialmenteNaoEquivalentes()
-        print(afdValidacao)
-        self.printTbl(tblEq)
+        #print(afdValidacao)
+        #self.printTbl(tblEq)
 
         for i in afdValidacao.estados:
             for j in afdValidacao.estados:
@@ -138,19 +138,23 @@ class AutomatoFD:
 
     def multiplicacao_automato(self, afdN2):
         estados = dict()
+
+        if self.alfabeto != afdN2.alfabeto:
+            return "Os alfabetos devem ser iguais !"
+
         automato_mult = AutomatoFD(self.alfabeto)
         numA1 = len(self.estados)
         numA2 = len(afdN2.estados)
         count = 1
 
-        estadosTotaisMult = (numA1 * numA2) + 1 #numero máximo de estados criados
+        estadosTotaisMult = (numA1 * numA2) + 1
 
         for i in range(1, estadosTotaisMult):
-            automato_mult.criaEstado(i) ### cria novo automato com todos os estados
+            automato_mult.criaEstado(i)
 
         for i in range(1, numA1 + 1):
             for p in range(1, numA2 + 1):
-                estados[(i, p)] = count ### cria um dicionario de tuplas com os estados novos com os antigos
+                estados[(i, p)] = count
                 count += 1
 
         # print("ESTADOS: ", estados)
@@ -161,56 +165,57 @@ class AutomatoFD:
             for p in range(1, numA2 + 1):
                 for l in list(self.alfabeto):
                     automato_mult.criaTransicao(estados[(i, p)],
-                                                estados[(self.transicoes[(i, l)], afdN2.transicoes[(p, l)])], l) # cria as transições dos estados do novo automato iterando pelo numero
-                                                                                                                 # número de estados dos automatos multiplicados
+                                                estados[(self.transicoes[(i, l)], afdN2.transicoes[(p, l)])], l)
 
         automato_mult.inicial = estados[(self.inicial, afdN2.inicial)]
-        return automato_mult, estados
+        return automato_mult,estados
 
-    def intersecao_automato(self, afdN2, automato_mult, estados):
+    def intersecao_automato(self, afdN2):
+
+        automato_mult,estados = self.multiplicacao_automato(afdN2)
 
         for i in self.finais:
             for p in afdN2.finais:
                 if ((i, p) in estados.keys()):
-                    automato_mult.mudaEstadoFinal(estados[(i, p)], True) # se a tupla de estados finais exister no dicionario torna ela o estado final do novo automato
-
-        # print(automato_mult)
+                    automato_mult.mudaEstadoFinal(estados[(i, p)], True)
 
         return automato_mult
 
-    def uniao_automato(self, afdN2, automato_mult, estados):
+    def uniao_automato(self, afdN2):
+
+        automato_uni, estados = self.multiplicacao_automato(afdN2)
 
         for e in estados:
             for i in self.finais:
                 if (e[0] == i):
-                    automato_mult.mudaEstadoFinal(estados[e], True) # Poe com estado final se algum elemento da tupla tem o estado de um dos automatos
+                    automato_uni.mudaEstadoFinal(estados[e], True)
 
             for p in afdN2.finais:
                 if (e[1] == p):
-                    automato_mult.mudaEstadoFinal(estados[e], True) # Poe com estado final se algum elemento da tupla tem o estado de um dos automatos
+                    automato_uni.mudaEstadoFinal(estados[e], True)
 
+        return automato_uni
 
-        return automato_mult
+    def diferenca_automato(self, afdN2):
 
-    def diferenca_automato(self, afdN2, automato_mult, estados):
+        automato_dif, estados = self.multiplicacao_automato(afdN2)
 
-        automato_mult.inicial = estados[(self.inicial, afdN2.inicial)]
         estadosFinais = dict()
         naoFinais = [estado for estado in afdN2.estados if estado not in afdN2.finais]
         count = 1
-        for i in self.finais: #adiciona  ao dicionária de estados finais a tupla de final de um (A) com o não final de outro (B). Exemplo: A - B
+        for i in self.finais:
             for p in naoFinais:
                 estadosFinais[(i, p)] = count
                 count += 1
 
         for p in estadosFinais:
             if (p in estados.keys()):
-                automato_mult.mudaEstadoFinal(estados[p], True)
+                automato_dif.mudaEstadoFinal(estados[p], True)
 
-        # print(naoFinais)
-        # print(estadosFinais)
-        # print(automato_dif)
-        return automato_mult
+        print(naoFinais)
+        print(estadosFinais)
+        print(automato_dif)
+        return automato_dif
 
     def complemento_automato(self):
 
@@ -218,9 +223,9 @@ class AutomatoFD:
 
         for i in automato_comp.estados:
             if i in automato_comp.finais:
-                automato_comp.mudaEstadoFinal(i, False)# faz a troca dos estados finais para não finais
+                automato_comp.mudaEstadoFinal(i, False)
             else:
-                automato_comp.mudaEstadoFinal(i, True) # faz a troca dos estados não finais para finais
+                automato_comp.mudaEstadoFinal(i, True)
         return automato_comp
 
     def automatoMinimo(self):
@@ -228,7 +233,6 @@ class AutomatoFD:
         self.removerEstadosSemAlcance()
 
         estadosEquivalentes = self.estadosEquivalentes()
-
         print(f"estados equivalentes: {estadosEquivalentes}")
 
         # quem joga pra aquele estado, agora vai jogar pro seu equivalente
@@ -244,11 +248,13 @@ class AutomatoFD:
                             # print(f" {self.transicoes[(i,char)]}")
 
                 # excluindo as transicoes
-                # print(f"removendo transicao {qi,char}")
-                self.transicoes.pop((qi, char))
+                if (qi, char) in self.transicoes.keys():
+                    print(f"removendo transicao {qi,char}")
+                    self.transicoes.pop((qi, char))
 
             # print(f"removendo estado {qi}")
-            self.estados.remove(qi)
+            if qi in self.estados:
+                self.estados.remove(qi)
 
     def removerEstadosSemAlcance(self):
 
@@ -317,7 +323,9 @@ class AutomatoFD:
                         if tblEq[(i, j)] is not False and tblEq[(i, j)] is not None:
                             equivalentes.append((i, j))
 
+            self.printTbl(tblEq)
             return equivalentes
+
 
         except Exception as erro:
             print("Erro ao minimizar automato, verifique se o mesmo não contem estados com transições incompletas")
