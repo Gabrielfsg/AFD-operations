@@ -108,11 +108,11 @@ class AutomatoFD:
 
         afdValidacao.mudaEstadoInicial(self.inicial)
         tblEq = afdValidacao.obterTrivialmenteNaoEquivalentes()
-        #print(afdValidacao)
-        #self.printTbl(tblEq)
+        print(afdValidacao)
+        self.printTbl(tblEq)
 
-        for i in self.estados:
-            for j in self.estados:
+        for i in afdValidacao.estados:
+            for j in afdValidacao.estados:
                 if i == j:
                     break
                 else:
