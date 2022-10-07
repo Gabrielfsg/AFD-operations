@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
-import os,threading
+import os, threading
+
 
 class AutomatoFD:
 
@@ -130,11 +131,36 @@ class AutomatoFD:
                                 qj = afd2.transicoes[(j - len(self.estados), char)] + len(self.estados)
 
                             # print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
-                            if qi != qj:  # nao analisa tuplas iguais
-                                if tblEq[(qi, qj)] == False:  # Estados não equivalentes, logo, os AFDs nao sao equiv.
-                                    return "Os automatos nao são equivalentes"
+                            # if qi != qj:  # nao analisa tuplas iguais
+                            #     if tblEq[(qi, qj)] == False:  # Estados não equivalentes, logo, os AFDs nao sao equiv.
+                            #         return "Os automatos nao são equivalentes"
+                            # else:
+                            tblEq[(i, j)].append((qi, qj))#seta valores aos que podem ser  equivalente
+                            tblEq[(j, i)].append((qi, qj))#seta valores aos que podem ser  equivalente
 
-        return "Os automatos sao equivalentes"
+        # Função que itera todos os estados da tabela de equivalência:
+        #1° Valida se o estado ta marcado como false. se não vai para a etapa 2 se sim passa para o próximo
+        #2° pós isso ele itera a lista encadeada do estado que não está marcado como false
+        #3° se algum da lista encadeada estiver no dicionario como false, ele seta o estado como false e depois
+        # itera toda a lista setando os estados que tem o estado que acabou de ser setado com false tbm
+
+
+        for tup in tblEq:
+            if (tblEq[tup] != False):
+                for i in tblEq[tup]:
+                    if (i in tblEq):
+                        if (tblEq[i] == False):
+                            tblEq[tup] = False
+                            print(tup)
+                            for g in tblEq:
+                                if (tblEq[g] != False):
+                                    if (tup in tblEq[g]):
+                                        tblEq[g] = False
+
+        if tblEq[(self.inicial, len(self.estados) + 1)] == False:  # verifica se o estado inicial do automato 1 e do 2 são ou não equivalentes
+            return "Os automatos nao são equivalentes"
+        else:
+            return "Os automatos sao equivalentes"
 
     def multiplicacao_automato(self, afdN2):
         estados = dict()
@@ -143,14 +169,14 @@ class AutomatoFD:
         numA2 = len(afdN2.estados)
         count = 1
 
-        estadosTotaisMult = (numA1 * numA2) + 1 #numero máximo de estados criados
+        estadosTotaisMult = (numA1 * numA2) + 1  # numero máximo de estados criados
 
         for i in range(1, estadosTotaisMult):
-            automato_mult.criaEstado(i) ### cria novo automato com todos os estados
+            automato_mult.criaEstado(i)  ### cria novo automato com todos os estados
 
         for i in range(1, numA1 + 1):
             for p in range(1, numA2 + 1):
-                estados[(i, p)] = count ### cria um dicionario de tuplas com os estados novos com os antigos
+                estados[(i, p)] = count  ### cria um dicionario de tuplas com os estados novos com os antigos
                 count += 1
 
         # print("ESTADOS: ", estados)
@@ -161,8 +187,9 @@ class AutomatoFD:
             for p in range(1, numA2 + 1):
                 for l in list(self.alfabeto):
                     automato_mult.criaTransicao(estados[(i, p)],
-                                                estados[(self.transicoes[(i, l)], afdN2.transicoes[(p, l)])], l) # cria as transições dos estados do novo automato iterando pelo numero
-                                                                                                                 # número de estados dos automatos multiplicados
+                                                estados[(self.transicoes[(i, l)], afdN2.transicoes[(p, l)])],
+                                                l)  # cria as transições dos estados do novo automato iterando pelo numero
+                    # número de estados dos automatos multiplicados
 
         automato_mult.inicial = estados[(self.inicial, afdN2.inicial)]
         return automato_mult, estados
@@ -172,7 +199,8 @@ class AutomatoFD:
         for i in self.finais:
             for p in afdN2.finais:
                 if ((i, p) in estados.keys()):
-                    automato_mult.mudaEstadoFinal(estados[(i, p)], True) # se a tupla de estados finais exister no dicionario torna ela o estado final do novo automato
+                    automato_mult.mudaEstadoFinal(estados[(i, p)],
+                                                  True)  # se a tupla de estados finais exister no dicionario torna ela o estado final do novo automato
 
         # print(automato_mult)
 
@@ -183,12 +211,13 @@ class AutomatoFD:
         for e in estados:
             for i in self.finais:
                 if (e[0] == i):
-                    automato_mult.mudaEstadoFinal(estados[e], True) # Poe com estado final se algum elemento da tupla tem o estado de um dos automatos
+                    automato_mult.mudaEstadoFinal(estados[e],
+                                                  True)  # Poe com estado final se algum elemento da tupla tem o estado de um dos automatos
 
             for p in afdN2.finais:
                 if (e[1] == p):
-                    automato_mult.mudaEstadoFinal(estados[e], True) # Poe com estado final se algum elemento da tupla tem o estado de um dos automatos
-
+                    automato_mult.mudaEstadoFinal(estados[e],
+                                                  True)  # Poe com estado final se algum elemento da tupla tem o estado de um dos automatos
 
         return automato_mult
 
@@ -198,7 +227,7 @@ class AutomatoFD:
         estadosFinais = dict()
         naoFinais = [estado for estado in afdN2.estados if estado not in afdN2.finais]
         count = 1
-        for i in self.finais: #adiciona  ao dicionária de estados finais a tupla de final de um (A) com o não final de outro (B). Exemplo: A - B
+        for i in self.finais:  # adiciona  ao dicionária de estados finais a tupla de final de um (A) com o não final de outro (B). Exemplo: A - B
             for p in naoFinais:
                 estadosFinais[(i, p)] = count
                 count += 1
@@ -218,9 +247,9 @@ class AutomatoFD:
 
         for i in automato_comp.estados:
             if i in automato_comp.finais:
-                automato_comp.mudaEstadoFinal(i, False)# faz a troca dos estados finais para não finais
+                automato_comp.mudaEstadoFinal(i, False)  # faz a troca dos estados finais para não finais
             else:
-                automato_comp.mudaEstadoFinal(i, True) # faz a troca dos estados não finais para finais
+                automato_comp.mudaEstadoFinal(i, True)  # faz a troca dos estados não finais para finais
         return automato_comp
 
     def automatoMinimo(self):
@@ -229,34 +258,34 @@ class AutomatoFD:
 
         estadosEquivalentes = self.estadosEquivalentes()
 
-        #print(f"estados equivalentes: {estadosEquivalentes}")
+        # print(f"estados equivalentes: {estadosEquivalentes}")
 
         eliminar = dict()
 
         # quem joga pra aquele estado, agora vai jogar pro seu equivalente
         for par in estadosEquivalentes:
-            #print(par)
+            # print(par)
             qi, qj = par
-            if qj in eliminar.keys(): #Se o estado a ser eliminado ja foi eliminado
-                qj = eliminar[qj] #Obtenho o equivalente dele
-                #print(f"par alterou pra: {qi,qj}")
+            if qj in eliminar.keys():  # Se o estado a ser eliminado ja foi eliminado
+                qj = eliminar[qj]  # Obtenho o equivalente dele
+                # print(f"par alterou pra: {qi,qj}")
 
-            if qi != qj: #Desnecessario analisar a equivalencia de um estado com ele mesmo
+            if qi != qj:  # Desnecessario analisar a equivalencia de um estado com ele mesmo
 
                 for char in self.alfabeto:
                     for e in self.estados:
                         if self.transicoes[(e, char)] == qj:  # encontra transições onde apareça o estado qj
                             self.transicoes[(e, char)] = qi  # qi receberá o que antes entrava em qj
-                            #print(f"{e, char} -> {self.transicoes[(e, char)]}, agora vai pra {qi}")
+                            # print(f"{e, char} -> {self.transicoes[(e, char)]}, agora vai pra {qi}")
 
                 if qj not in eliminar:
                     eliminar[qj] = qi
-                    #print(f'colocou {qj} na lista de eliminados, ele é equivalente ao {qi}')
+                    # print(f'colocou {qj} na lista de eliminados, ele é equivalente ao {qi}')
 
-        #Excluindo estados e transições
+        # Excluindo estados e transições
         for e in eliminar.keys():
             for char in self.alfabeto:
-                self.transicoes.pop((e,char))
+                self.transicoes.pop((e, char))
 
             self.estados.remove(e)
 
@@ -267,20 +296,20 @@ class AutomatoFD:
 
         while fila:
             estado = fila.pop(0)
-            #print(f"estado sendo explorado: {estado}")
+            # print(f"estado sendo explorado: {estado}")
             if estado not in visitados:
                 visitados.append(estado)
-                #olhando as transições
+                # olhando as transições
                 try:
                     for char in self.alfabeto:
-                        #print(f"add estados novos pra explorar: {estado,char} --> {self.transicoes[(estado,char)]}")
-                        fila.append(self.transicoes[(estado,char)])
+                        # print(f"add estados novos pra explorar: {estado,char} --> {self.transicoes[(estado,char)]}")
+                        fila.append(self.transicoes[(estado, char)])
                 except Exception:
                     pass
 
-        #print(f"visitados: {visitados}")
+        # print(f"visitados: {visitados}")
 
-        if(len(visitados) < len(self.estados)):
+        if (len(visitados) < len(self.estados)):
             print("\nAtenção: foram encontrados estados inalcançáveis, os mesmos serão removidos")
             for i in list(self.estados):
                 if i not in visitados:
@@ -302,17 +331,17 @@ class AutomatoFD:
                             for char in self.alfabeto:
                                 qi = self.transicoes[(i, char)]
                                 qj = self.transicoes[(j, char)]
-                                #print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
+                                # print(f"Atuais: {i,j}, letra {char}, Destino: {qi,qj} ")
                                 if qi != qj:  # nao analisa tuplas iguais
                                     if tblEq[(qi, qj)] == False:  # Sao trivialmente não equivalentes
-                                        #print("marca false")
+                                        # print("marca false")
                                         if len(tblEq[(i, j)]) > 0:
                                             tblEq = self.marcarLembretes(tblEq, i, j)
                                         tblEq[(i, j)] = False
                                         tblEq[(j, i)] = False
                                         break
                                     else:  # Não sei
-                                        #print("não sei, append")
+                                        # print("não sei, append")
                                         if (i, j) not in tblEq[(qi, qj)]:  # lembrete repetido não entra
                                             tblEq[(qi, qj)].append((i, j))
                                             tblEq[(qj, qi)].append((i, j))
@@ -333,22 +362,21 @@ class AutomatoFD:
             print("Erro ao minimizar automato, verifique se o mesmo não contem estados com transições incompletas")
             print(f'Descrição do erro: {erro}')
 
-
     def marcarLembretes(self, tblEq, i, j):
 
         lista = tblEq[(i, j)]
-        #print(f"lembrete no {i,j}: {lista}")
+        # print(f"lembrete no {i,j}: {lista}")
 
         if lista:
             for tupla in lista:
-                tblEq[(i,j)].remove(tupla)
+                tblEq[(i, j)].remove(tupla)
                 qi, qj = tupla
-                #print(f"while lembrete: {qi, qj}")
+                # print(f"while lembrete: {qi, qj}")
                 t = tblEq[(qi, qj)]
                 if type(t) is list:
                     if len(t) > 0:
                         tblEq = self.marcarLembretes(tblEq, qi, qj)
-                    #print(f"marcando {qi,qj} como false")
+                    # print(f"marcando {qi,qj} como false")
                     tblEq[(qi, qj)] = False
                     tblEq[(qj, qi)] = False
 
@@ -457,17 +485,16 @@ class AutomatoFD:
             arqObj.write("\n</structure>")
             arqObj.close()
 
-            threading.Thread(target=abrirJFLAP,args=(nome, )).start()
+            threading.Thread(target=abrirJFLAP, args=(nome,)).start()
 
             print("\nAFD salvo com sucesso !")
         except Exception as Erro:
             print("\nErro ao salvar o arquivo ! {}".format(Erro))
 
 
-
-
 def abrirJFLAP(nomeArq):
     os.system(f'cmd /k "java -jar JFLAP7.1.jar {nomeArq}.jff"')
+
 
 def importarAFD(diretorio):
     try:
