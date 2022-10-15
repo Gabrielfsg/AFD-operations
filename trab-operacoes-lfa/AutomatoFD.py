@@ -109,8 +109,8 @@ class AutomatoFD:
 
         afdValidacao.mudaEstadoInicial(self.inicial)
         tblEq = afdValidacao.obterTrivialmenteNaoEquivalentes()
-        print(afdValidacao)
-        self.printTbl(tblEq)
+        # print(afdValidacao)
+        # self.printTbl(tblEq)
 
         for i in afdValidacao.estados:
             for j in afdValidacao.estados:
@@ -139,13 +139,13 @@ class AutomatoFD:
                             tblEq[(j, i)].append((qi, qj))#seta valores aos que podem ser  equivalente
 
         # Função que itera todos os estados da tabela de equivalência:
-        #1° Valida se o estado ta marcado como false. se não vai para a etapa 2 se sim passa para o próximo
-        #2° pós isso ele itera a lista encadeada do estado que não está marcado como false
-        #3° se algum da lista encadeada estiver no dicionario como false, ele seta o estado como false e depois
+        # 1° Valida se o estado ta marcado como false. se não vai para a etapa 2 se sim passa para o próximo
+        # 2° após isso ele itera a lista encadeada do estado que não está marcado como false
+        # 3° se algum da lista encadeada estiver no dicionario como false, ele seta o estado como false e depois
         # itera toda a lista setando os estados que tem o estado que acabou de ser setado com false tbm
 
-
         for tup in tblEq:
+            print(f'tupla antes do for: {tup}')
             if (tblEq[tup] != False):
                 for i in tblEq[tup]:
                     if (i in tblEq):
@@ -236,9 +236,11 @@ class AutomatoFD:
             if (p in estados.keys()):
                 automato_mult.mudaEstadoFinal(estados[p], True)
 
-        # print(naoFinais)
-        # print(estadosFinais)
-        # print(automato_dif)
+        print("ESTADOS: ", estados)
+        print(self.transicoes)
+        print(afdN2.transicoes)
+        print(naoFinais)
+        print(estadosFinais)
         return automato_mult
 
     def complemento_automato(self):
@@ -287,6 +289,8 @@ class AutomatoFD:
             for char in self.alfabeto:
                 self.transicoes.pop((e, char))
 
+            if e == self.inicial: #Se o estado a ser removido for inicial, o equivalente dele passa a ser inicial
+                self.mudaEstadoInicial(eliminar[e])
             self.estados.remove(e)
 
     def removerEstadosSemAlcance(self):
