@@ -46,63 +46,65 @@ if __name__ == '__main__':
     else:
         print('Rejeita cadeia "{}"'.format(cadeia))
 
-    # print("###COMPLEMENTO###")
-    # afd.salvarArquivo('AFD_ANTES_DO_COMPLEMENTO')
-    # afd.complemento_automato().salvarArquivo('ComplementoAFD')
-    # print("###")
+    print("###COMPLEMENTO###")
+    afd.salvarArquivo('AFD_ANTES_DO_COMPLEMENTO')
+    afd.complemento_automato().salvarArquivo('ComplementoAFD')
+    print("###")
 
-    # print("\n ###MULTIPLICAÇAO E UNIÃO###")
-    #
-    # afdM1 = AutomatoFD('ab');
-    # afdM2 = AutomatoFD('ab');
-    #
-    # for i in range(1, 5):
-    #     afdM1.criaEstado(i)
-    #
-    # for i in range(1, 3):
-    #     afdM2.criaEstado(i)
-    #
-    # afdM1.criaTransicao(1, 2, 'b')
-    # afdM1.criaTransicao(1, 1, 'a')
-    # afdM1.criaTransicao(2, 2, 'b')
-    # afdM1.criaTransicao(2, 3, 'a')
-    # afdM1.criaTransicao(3, 4, 'b')
-    # afdM1.criaTransicao(3, 1, 'a')
-    # afdM1.criaTransicao(4, 4, 'a')
-    # afdM1.criaTransicao(4, 4, 'b')
+    print("\n ###MULTIPLICAÇAO E UNIÃO###")
 
-    # afdM2.criaTransicao(1, 1, 'b')
-    # afdM2.criaTransicao(1, 2, 'a')
-    # afdM2.criaTransicao(2, 2, 'b')
-    # afdM2.criaTransicao(2, 1, 'a')
+    afdM1 = AutomatoFD('ab');
+    afdM2 = AutomatoFD('ab');
 
-    # afdM1.mudaEstadoInicial(1)
-    # afdM2.mudaEstadoInicial(1)
+    for i in range(1, 5):
+        afdM1.criaEstado(i)
 
-    # afdM2.mudaEstadoFinal(1, True)
-    # afdM1.mudaEstadoFinal(1, True)
-    # afdM1.mudaEstadoFinal(2, True)
-    # afdM1.mudaEstadoFinal(3, True)
+    for i in range(1, 3):
+        afdM2.criaEstado(i)
 
-    # print(afdM1)
-    # print(afdM2)
-    # afdM1.salvarArquivo('afdM1')
-    # afdM2.salvarArquivo('afdM2')
+    afdM1.criaTransicao(1, 2, 'b')
+    afdM1.criaTransicao(1, 1, 'a')
+    afdM1.criaTransicao(2, 2, 'b')
+    afdM1.criaTransicao(2, 3, 'a')
+    afdM1.criaTransicao(3, 4, 'b')
+    afdM1.criaTransicao(3, 1, 'a')
+    afdM1.criaTransicao(4, 4, 'a')
+    afdM1.criaTransicao(4, 4, 'b')
 
-    # automato_mult, estados = afdM1.multiplicacao_automato(afdM2)
-    # print("AFDs multiplicados")
-    # print(automato_mult)
-    # automato_mult.salvarArquivo('AFDM1M2')
-    # print(estados)
-    # print("AFDs INTERSECÇÃO")
-    # print(afdM1.intersecao_automato(afdM2, automato_mult, estados))
-    # automato_mult.salvarArquivo('AFDM1M2_INTER')
-    # print("AFDs UNIÃO")
-    # print(afdM1.uniao_automato(afdM2, automato_mult, estados))
-    # automato_mult.salvarArquivo('AFDM1M2_UNIAO')
-    # print("AFDs DIFERENÇA")
-    # print(afdM1.diferenca_automato(afdM2, automato_mult, estados))
-    # automato_mult.salvarArquivo('AFDM1M2_DIFERENCA')
+    afdM2.criaTransicao(1, 1, 'b')
+    afdM2.criaTransicao(1, 2, 'a')
+    afdM2.criaTransicao(2, 2, 'b')
+    afdM2.criaTransicao(2, 1, 'a')
+
+    afdM1.mudaEstadoInicial(1)
+    afdM2.mudaEstadoInicial(1)
+
+    afdM2.mudaEstadoFinal(1, True)
+    afdM1.mudaEstadoFinal(1, True)
+    afdM1.mudaEstadoFinal(2, True)
+    afdM1.mudaEstadoFinal(3, True)
+
+    print(afdM1)
+    print(afdM2)
+    afdM1.salvarArquivo('afdM1')
+    afdM2.salvarArquivo('afdM2')
+
+    automato_mult, estados = afdM1.multiplicacao_automato(afdM2)
+    print("AFDs multiplicados")
+    print(automato_mult)
+    automato_mult.salvarArquivo('AFDM1M2')
+    print(estados)
+    print("AFDs INTERSECÇÃO")
+    afdIntersec = afdM1.intersecao_automato(afdM2, automato_mult, estados)
+    print(afdIntersec)
+    afdIntersec.salvarArquivo('AFDM1M2_INTER')
+    print("AFDs UNIÃO")
+    afdUni = afdM1.uniao_automato(afdM2, automato_mult, estados)
+    print(afdUni)
+    afdUni.salvarArquivo('AFDM1M2_UNIAO')
+    print("AFDs DIFERENÇA")
+    afdDif = afdM1.diferenca_automato(afdM2, automato_mult, estados)
+    afdDif.salvarArquivo('AFDM1M2_DIFERENCA')
 
 
     #print("\n ###MINIMIZAÇÃO AUTOMATOS###")
