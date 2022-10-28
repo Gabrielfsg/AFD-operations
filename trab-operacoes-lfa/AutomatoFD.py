@@ -93,7 +93,7 @@ class AutomatoFD:
             return "O alfabeto deve ser o mesmo nos dois automatos."
 
         afdValidacao = AutomatoFD(self.alfabeto)
-
+        # nas linhas a seguir cria um automato fictício onde metade para baixo dos estados pertence ao primeiro automato e metade para cima ao segundo automato.
         count = 1
         for i in self.estados:
             afdValidacao.criaEstado(count)
